@@ -1,0 +1,7 @@
+.default {
+    @apply w-full p-2 text-base font-medium bg-pink-200 outline-none;
+}
+
+.error {
+    @apply w-full p-2 text-base font-medium bg-pink-200 outline-none border-2 border-solid border-rose-800;
+}

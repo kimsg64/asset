@@ -1,0 +1,7 @@
+.default {
+    @apply px-4 py-2 bg-pink-800 border-none text-lg text-white font-bold hover:bg-pink-400;
+}
+
+.small {
+    @apply m-1 px-2 py-1 bg-pink-800 border-none text-xs text-white font-bold hover:bg-pink-400;
+}

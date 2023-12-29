@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .layout-default {
+        @apply w-screen min-h-screen py-8 px-20 flex flex-col items-center;
+    }
+    .header {
+        @apply w-screen h-20 leading-loose text-4xl text-center font-bold;
+    }
+}
