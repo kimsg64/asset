@@ -3,7 +3,7 @@ import InputStyle from "@/app/_component/Input.module.css";
 
 type Props = {
     id: string;
-    type: "text" | "password" | "date" | "number";
+    type: "text" | "email" | "password" | "date" | "number";
     value: string;
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     placeholder?: string;

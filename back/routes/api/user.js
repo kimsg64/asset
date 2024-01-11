@@ -23,7 +23,8 @@ router.post("/create", async (req, res) => {
 // login
 router.post("/login", async (req, res) => {
     console.log("requested! with nodemon", req.body);
-    const { id, password } = req.body;
+
+    const { username: id, password } = req.body;
     try {
         const user = await User.findOne({ id, password });
         console.log("is this yours?", user);

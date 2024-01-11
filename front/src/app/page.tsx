@@ -1,16 +1,20 @@
 "use client";
+
 import Link from "next/link";
 import { useSession, signIn, signOut } from "next-auth/react";
 
 import Button from "@/app/_component/Button.module.css";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
     const { data: session } = useSession();
+    const router = useRouter();
 
     console.log("session data!", session);
 
     const onClickSignIn = () => signIn();
     const onClickSignOut = () => signOut();
+    const onClickSignUp = () => router.push("/signup");
 
     if (session) {
         return (
@@ -19,15 +23,12 @@ export default function Home() {
                 <ul className="flex">
                     <li>작업 ㄱ</li>
                     <li>
-                        {/* <Link href={`/asset/${session.user?.name}`} className={Button.small}>
-                            자산
-                        </Link> */}
-                        <Link href={`/asset`} className={Button.small}>
+                        <Link href={`/${session.user?.name}/asset`} className={Button.small}>
                             자산
                         </Link>
                     </li>
                     <li>
-                        <Link href={`/daily/${session.user?.name}`} className={Button.small}>
+                        <Link href={`/${session.user?.name}/daily`} className={Button.small}>
                             입력
                         </Link>
                     </li>
@@ -97,8 +98,13 @@ export default function Home() {
     }
 
     return (
-        <button className={Button.default} onClick={onClickSignIn}>
-            TO LOGIN PAGE
-        </button>
+        <>
+            <button className={Button.default} onClick={onClickSignIn}>
+                TO LOGIN PAGE
+            </button>
+            <button className={Button.default} onClick={onClickSignUp}>
+                TO SIGNUP PAGE
+            </button>
+        </>
     );
 }

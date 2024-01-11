@@ -1,0 +1,6 @@
+.default {
+    @apply my-2 grid grid-cols-[1fr_1fr_1fr_2fr_4fr_1fr];
+}
+.header {
+    @apply my-2 grid grid-cols-[1fr_1fr_1fr_2fr_4fr_1fr] font-bold;
+}

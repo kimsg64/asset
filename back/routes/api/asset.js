@@ -33,7 +33,7 @@ router.get("/", async (req, res) => {
         });
 
         console.log("here are formatted assets!", formattedAssets);
-        return res.status(200).json({ assets: formattedAssets, message: "here are all assets!" });
+        return res.status(200).json(formattedAssets);
     } catch (error) {
         console.log("there's an error!!!", error);
         return res.status(500).json({ message: `failed to get all assets! ${error}` });
