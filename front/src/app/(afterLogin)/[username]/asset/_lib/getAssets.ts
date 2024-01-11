@@ -1,7 +1,7 @@
 export const getAssets = async () => {
     const res = await fetch(`http://localhost:8080/api/asset`, {
         next: {
-            tags: ["asset"],
+            tags: ["user", "asset"],
         },
         cache: "no-store",
     });

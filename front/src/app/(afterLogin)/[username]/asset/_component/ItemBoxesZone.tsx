@@ -11,7 +11,7 @@ type Props = { username: string };
 
 export default function ItemBoxesZone({ username }: Props) {
     const { data: assets } = useQuery<IAsset[]>({
-        queryKey: ["asset"],
+        queryKey: ["user", "asset"],
         queryFn: getAssets,
         staleTime: 60 * 1000,
         gcTime: 300 * 1000,

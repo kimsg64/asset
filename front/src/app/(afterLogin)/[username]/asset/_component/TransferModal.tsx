@@ -36,7 +36,7 @@ export default function Component({ assetTypeId, username }: Props) {
     const router = useRouter();
 
     const { data: assets } = useQuery<IAsset[]>({
-        queryKey: ["asset"],
+        queryKey: ["user", "asset"],
         queryFn: getAssets,
         staleTime: 60 * 1000,
         gcTime: 300 * 1000,
@@ -86,10 +86,7 @@ export default function Component({ assetTypeId, username }: Props) {
         // }
     };
 
-    const destroyModal = () => {
-        router.replace(`/${username}/asset`);
-        // 다른 페이지에서 접근하는 경우도 있으므로 back() 안됨
-    };
+    const destroyModal = () => router.back();
 
     return (
         <div className="w-screen h-screen bg-black bg-opacity-30 fixed z-10 top-0 left-0">
@@ -109,7 +106,7 @@ export default function Component({ assetTypeId, username }: Props) {
                     <Input id="memo" type="text" placeholder="메모" value={memo} onChange={onChangeMemo} />
                 </div>
                 <button className={Button.default}>이체</button>
-                <button className={Button.default} onClick={destroyModal}>
+                <button className={Button.default} type="button" onClick={destroyModal}>
                     CLOSE
                 </button>
             </form>
