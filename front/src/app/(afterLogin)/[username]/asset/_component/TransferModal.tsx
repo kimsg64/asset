@@ -84,17 +84,7 @@ export default function Component({ assetTypeId, username }: Props) {
         }
     };
 
-    // [S] reusable functions
-    // const getAssetsList = async () => {
-    //     try {
-    //         setSender(assets?.find((asset) => asset._id === assetTypeId));
-    //         setRecipient(assets?.filter((asset) => asset._id !== assetTypeId)[0]);
-    //     } catch (error) {
-    //         console.log("catch me if you can");
-    //     }
-    // };
     const destroyModal = () => router.replace(`/${username}/asset`);
-    // [E] reusable functions
 
     return (
         <div className="w-screen h-screen bg-black bg-opacity-30 fixed z-10 top-0 left-0">
