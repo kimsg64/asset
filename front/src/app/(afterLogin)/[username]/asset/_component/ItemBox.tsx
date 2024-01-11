@@ -44,7 +44,7 @@ export default function Component({ asset, username }: Props) {
             <div>{asset.amount!.toLocaleString()}</div>
             {isUpdating ? <Input id="memo" placeholder={asset.memo} type="text" value={memo} onChange={onChangeMemo} /> : <div>{asset.memo}</div>}
             <div>
-                <Link href={`/${username}/asset/${asset._id}`} className={Button.small}>
+                <Link href={`/${username}/asset/i/${asset._id}`} className={Button.small}>
                     이체
                 </Link>
                 <Link href={{ pathname: `/${username}/daily`, query: { asset: asset._id } }} className={Button.small}>

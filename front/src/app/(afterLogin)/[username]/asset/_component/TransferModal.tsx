@@ -1,14 +1,14 @@
 "use client";
 // react, next
-import { useEffect, useState } from "react";
+import { ChangeEventHandler, FormEventHandler, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 
 // libs
-import axios from "axios";
+// import axios from "axios";
 
 // custom modules
-import Apis from "@/app/api/api";
+// import Apis from "@/app/api/api";
 import { IAsset } from "@/interfaces/IFcAsset";
 import { getAssets } from "../_lib/getAssets";
 
@@ -50,41 +50,46 @@ export default function Component({ assetTypeId, username }: Props) {
     // [E] useEffect
 
     // [S] event handling
-    const onChangeAmount = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const onChangeAmount: ChangeEventHandler<HTMLInputElement> = (event) => {
         if (!sender) return;
         const amount = +event.target.value.split(",").join("");
         setAmount(Number.isNaN(amount) ? 0 : amount > sender.amount ? sender.amount : amount);
     };
-    const onChangeRecipient = (event: React.FormEvent<HTMLSelectElement>) => {
+    const onChangeRecipient: FormEventHandler<HTMLSelectElement> = (event) => {
         const recipientId = event.currentTarget.value;
         setRecipient(assets?.find((asset) => asset._id === recipientId)!);
     };
-    const onChangeMemo = (event: React.ChangeEvent<HTMLInputElement>) => setMemo(event.target.value);
-    const onSubmitForm = async (event: React.FormEvent) => {
+    const onChangeMemo: ChangeEventHandler<HTMLInputElement> = (event) => setMemo(event.target.value);
+
+    // 숙청 대상
+    const onSubmitForm: FormEventHandler = async (event) => {
         if (!sender || !recipient) return;
         if (amount <= 0) return;
         event.preventDefault();
 
-        try {
-            const newTransferReq = {
-                senderId: sender._id,
-                senderAmount: sender.amount,
-                recipientId: recipient._id,
-                recipientAmount: recipient.amount,
-                amount,
-                memo,
-            };
-            console.log("will be sent!", newTransferReq);
-            await Apis.post("/asset/transfer", newTransferReq).then(destroyModal);
-        } catch (error) {
-            if (axios.isAxiosError(error) && !!error.response) {
-                setIsError(true);
-                setError(error.response.data.message);
-            }
-        }
+        // try {
+        //     const newTransferReq = {
+        //         senderId: sender._id,
+        //         senderAmount: sender.amount,
+        //         recipientId: recipient._id,
+        //         recipientAmount: recipient.amount,
+        //         amount,
+        //         memo,
+        //     };
+        //     console.log("will be sent!", newTransferReq);
+        //     await Apis.post("/asset/transfer", newTransferReq).then(destroyModal);
+        // } catch (error) {
+        //     if (axios.isAxiosError(error) && !!error.response) {
+        //         setIsError(true);
+        //         setError(error.response.data.message);
+        //     }
+        // }
     };
 
-    const destroyModal = () => router.replace(`/${username}/asset`);
+    const destroyModal = () => {
+        router.replace(`/${username}/asset`);
+        // 다른 페이지에서 접근하는 경우도 있으므로 back() 안됨
+    };
 
     return (
         <div className="w-screen h-screen bg-black bg-opacity-30 fixed z-10 top-0 left-0">
