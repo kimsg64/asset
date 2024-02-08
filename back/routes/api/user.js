@@ -5,8 +5,8 @@ const { User } = require("../../models/user");
 
 /** [S] APIs */
 // create a user
-router.post("/create", async (req, res) => {
-    // console.log("posted!!!", req.body);
+router.post("/", async (req, res) => {
+    console.log("posted!!!", req.body);
     const newUser = new User(req.body); // new User object
     // console.log("this is new user!", newUser);
     try {
@@ -22,20 +22,24 @@ router.post("/create", async (req, res) => {
 
 // login
 router.post("/login", async (req, res) => {
-    console.log("requested! with nodemon", req.body);
-
-    const { username: id, password } = req.body;
+    const { id, password } = req.body;
+    console.log("id", id, "password", password);
     try {
         const user = await User.findOne({ id, password });
         console.log("is this yours?", user);
         if (!!user) {
             return res.status(200).json(user);
         } else {
-            return res.status(500).json({ message: "can't find that account!" });
+            return res.status(500).json({ message: "not_exist" });
         }
     } catch (error) {
         console.log("there's an error!!!", error);
     }
+});
+
+// logout
+router.post("/logout", async (req, res) => {
+    res.clearCookie();
 });
 
 /** [E] APIs */

@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
-const moment = require("moment"); // get and format time
-const Daily = require("./daily").Daily;
+// const moment = require("moment"); // get and format time
+// const Daily = require("./daily").Daily;
 
 const AssetSchema = new mongoose.Schema(
     {
-        owner: { type: String, required: true }, // 임시
-        // ownerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+        // owner: { type: String, required: true }, // 임시
+        ownerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
         name: { type: String, required: true },
         inputs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Daily" }],
         memo: { type: String, default: "" },

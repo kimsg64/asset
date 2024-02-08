@@ -1,23 +1,12 @@
-"use client";
-import { useRouter } from "next/navigation";
-import "./globals.css";
+import "./globalTheme.css";
 import AuthSession from "@/app/_component/AuthSession";
 
-type Props = {
-    children: React.ReactNode;
-};
+type Props = { children: React.ReactNode };
 
-export default function RootLayout({ children }: Props) {
-    const router = useRouter();
-    const onClickHome = () => {
-        router.replace("/");
-    };
+export default async function RootLayout({ children }: Props) {
     return (
         <html>
-            <body className="layout-default">
-                <header className="header" onClick={onClickHome}>
-                    Next.JS
-                </header>
+            <body>
                 <AuthSession>{children}</AuthSession>
             </body>
         </html>

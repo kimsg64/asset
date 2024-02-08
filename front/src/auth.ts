@@ -1,6 +1,8 @@
 import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
 import Credentials from "next-auth/providers/credentials";
+import cookie from "cookie";
+import { cookies } from "next/headers";
 
 export const {
     handlers: { GET, POST },
@@ -21,18 +23,32 @@ export const {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        username: credentials.username,
+                        id: credentials.username,
                         password: credentials.password,
                     }),
                 });
+
+                console.log("check response!", response.ok);
+                const setCookie = response.headers.get("Set-Cookie");
+                console.log("setCookie", setCookie);
+                if (setCookie) {
+                    const parsed = cookie.parse(setCookie);
+                    cookies().set("connect.sid", parsed["connect.sid"], parsed);
+                }
 
                 if (!response.ok) {
                     return null;
                 }
 
                 const user = await response.json();
+                console.log("user", user);
 
-                return user;
+                return {
+                    name: user.name,
+                    email: user.id,
+                    id: user.id,
+                    image: "",
+                };
             },
         }),
     ],

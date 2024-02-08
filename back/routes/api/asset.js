@@ -5,11 +5,22 @@ const moment = require("moment");
 
 const { Asset } = require("../../models/asset");
 const { Daily } = require("../../models/daily");
+const { User } = require("../../models/user");
 
+const findUser = async (email) => {
+    console.log("this is user", email);
+    const id = email.includes("@") ? email : email.replace("%40", "@");
+    const user = await User.findOne({ id });
+    if (user) {
+        console.log("this is user", user._id);
+        return user._id;
+    }
+    return null;
+};
 /** [S] APIs */
 
 // get a specific asset
-router.get("/:id", async (req, res) => {
+router.get("/:userId/asset/:id", async (req, res) => {
     try {
         const asset = await Asset.findById(req.params.id);
         console.log("here is the asset!", asset);
@@ -21,9 +32,14 @@ router.get("/:id", async (req, res) => {
 });
 
 // get all assets
-router.get("/", async (req, res) => {
+router.get("/:userId", async (req, res) => {
     try {
-        const assets = await Asset.find({}).populate("inputs");
+        // 해당 유저의 asset만 불러오도록 수정!
+        const userId = req.params.userId;
+        // 세션에서 사용자 식별 후 검색에 포함해야 하는데... 백엔드 로직을 잘 모르겠으므로 일단 email로 구분해서 보내기
+        const user_Id = await findUser(userId);
+        console.log("userId:::::", userId, user_Id);
+        const assets = await Asset.find({ ownerId: user_Id }).populate("inputs");
 
         const formattedAssets = assets.map((asset) => {
             const amount = asset.inputs.reduce((totalAmount, currentInput) => {
@@ -44,15 +60,17 @@ router.get("/", async (req, res) => {
 router.post("/create", async (req, res) => {
     // console.log("posted!!!", req.body);
     // console.log("this is new asset input!", newAsset);
-    const { name, amount, memo } = req.body;
+    const { name, amount, memo, userId } = req.body;
+    console.log("name:", name, "amount:", amount, "memo:", memo, "userId:", userId, "decoded:", decodeURIComponent(userId));
+    const ownerId = await findUser(decodeURIComponent(userId));
     try {
-        const newDaily = new Daily({ amount, transactionType: "income", memo: "자산입력", owner: "you" });
-        const newAsset = new Asset({ name, memo, owner: "you", inputs: [newDaily._id] }); // new User object
+        const newDaily = new Daily({ amount, transactionType: "income", memo: "자산입력", ownerId });
+        const newAsset = new Asset({ name, memo, ownerId, inputs: [newDaily._id] }); // new User object
         await Promise.all([newDaily.save(), newAsset.save()]);
         await newDaily.updateOne({ assetTypeId: newAsset._id });
         return res.status(200).json({ newAsset, message: "a asset record is input!" });
     } catch (error) {
-        console.log("there's an error!!!", error);
+        console.log("there's an error!!! when you tried to make a new asset", error);
         if (error.code === 11000) {
             return res.status(500).json({ message: `failed to create a asset record! ${error}` });
         }
@@ -67,7 +85,7 @@ router.post("/update/:id", async (req, res) => {
         if (!updated.name) delete updated.name;
         if (!updated.memo) delete updated.memo;
 
-        console.log("this will be updated!", id, updated);
+        console.log("this will be updated!", id, req.body);
 
         await Asset.findByIdAndUpdate(id, updated);
         // const { amount, transactionType } = req.body;
@@ -86,15 +104,18 @@ router.post("/update/:id", async (req, res) => {
 // @transaction: update two assets and update two daily inputs
 router.post("/transfer", async (req, res) => {
     try {
-        const { senderId, senderAmount, recipientId, recipientAmount, amount, memo } = req.body;
+        const { senderId, senderAmount, recipientId, recipientAmount, amount, memo, ownerId } = req.body;
+        console.log("body", req.body);
 
+        // ownerId const user_Id = await findUser(userId); 이슈!!!!!!!
         // Asset에서 자산 이동
         // await Promise.all([Asset.findByIdAndUpdate(senderId, { amount: senderAmount - amount }), Asset.findByIdAndUpdate(recipientId, { amount: recipientAmount + amount })]);
 
         // Daily에 이체로 등록
         // 트랜잭션은 백엔드에서 처리되어야 하는가? => Yes(데이터 통합, 트래픽 감소, 보안, 확장성 측면에서 유리함)
-        const senderDaily = new Daily({ owner: "you", transactionType: "spending", amount, assetTypeId: senderId, memo });
-        const recipientDaily = new Daily({ owner: "you", transactionType: "income", amount, assetTypeId: recipientId, memo });
+        const senderDaily = new Daily({ ownerId, transactionType: "spending", amount, assetTypeId: senderId, memo });
+        const recipientDaily = new Daily({ ownerId, transactionType: "income", amount, assetTypeId: recipientId, memo });
+
         await Promise.all([
             Asset.findByIdAndUpdate(senderId, { $push: { inputs: senderDaily._id } }),
             Asset.findByIdAndUpdate(recipientId, { $push: { inputs: recipientDaily._id } }),
@@ -106,6 +127,26 @@ router.post("/transfer", async (req, res) => {
     } catch (error) {
         console.log("there's an error!!!", error);
         return res.status(500).json({ message: `failed to transfer! ${error}` });
+    }
+});
+
+// remove an asset
+router.delete("/delete", async (req, res) => {
+    try {
+        const { assetTypeId } = req.body;
+        console.log("assetTypeId", assetTypeId);
+
+        // const { _id, assetTypeId } = req.body;
+        // await Daily.findByIdAndDelete(_id);
+
+        // console.log(`asset type id: ${assetTypeId}, daily id: ${_id}`);
+        await Daily.deleteMany({ assetTypeId });
+        await Asset.findByIdAndDelete(assetTypeId);
+
+        return res.status(200).json({ message: "deleted!!!" });
+    } catch (error) {
+        console.log("failed to remove!", error);
+        return res.status(500).json({ message: `failed to remove! ${error}` });
     }
 });
 /** [E] APIs */

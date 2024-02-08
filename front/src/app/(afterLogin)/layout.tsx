@@ -1,9 +1,13 @@
+import Header from "./_component/Header";
 import RQProvider from "./_component/RQProvider";
 
-interface Props {
-    children: React.ReactNode;
-}
+type Props = { children: React.ReactNode };
 
-export default function Layout({ children }: Props) {
-    return <RQProvider>{children}</RQProvider>;
+export default async function Layout({ children }: Props) {
+    return (
+        <>
+            <Header />
+            <RQProvider>{children}</RQProvider>
+        </>
+    );
 }

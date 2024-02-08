@@ -1,82 +1,49 @@
 "use client";
 // react, next
-import { useState, useEffect, ChangeEventHandler, FormEventHandler } from "react";
-import { useRouter } from "next/navigation";
+import { useFormState, useFormStatus } from "react-dom";
 
-// libs
-import { signIn } from "next-auth/react";
-import axios from "axios";
+import signup from "./_lib/signup";
+import * as style from "@/app/(beforeLogin)/beforeLogin.css";
 
-// custom modules
-import Apis from "@/app/api/api";
-import { ICreateUserReq, IUser } from "@/interfaces/IFcUser";
-
-// custom components
-import Input from "@/app/_component/Input";
-
-// custom styles
-import Form from "@/app/_component/Form.module.css";
-import SubTitle from "@/app/_component/SubTitle.module.css";
-import Button from "@/app/_component/Button.module.css";
+function showMessage(messageCode: string) {
+    if (messageCode === "already_exist") return "이미 가입된 계정입니다.";
+    if (messageCode === "no_id") return "아이디를 입력하세요.";
+    if (messageCode === "no_password") return "비밀번호를 입력하세요.";
+    if (messageCode === "no_passwordChecker") return "비밀번호를 확인하세요.";
+    if (messageCode === "password_not_matched") return "비밀번호가 일치하지 않습니다.";
+    if (messageCode === "no_name") return "이름을 입력하세요.";
+    return "";
+}
 
 export default function Page() {
-    const [name, setName] = useState("");
-    const [id, setId] = useState("");
-    const [password, setPassword] = useState("");
-    const [passwordChecker, setPasswordChecker] = useState("");
-    const [isPasswordAvailable, setIsPasswordAvailable] = useState(false);
-    const [isSubmittable, setIsSubmittable] = useState(false);
-    const [isError, setIsError] = useState(false);
-    const [error, setError] = useState("");
-    const router = useRouter();
+    const [state, formAction] = useFormState(signup, { message: "" });
+    const { pending } = useFormStatus();
 
-    useEffect(() => {
-        setIsPasswordAvailable(!!password && !!passwordChecker && password === passwordChecker);
-    }, [password, passwordChecker]);
-    useEffect(() => {
-        setIsSubmittable(!!name && !!id && isPasswordAvailable);
-    }, [name, id, isPasswordAvailable]);
-
-    const onChangeName: ChangeEventHandler<HTMLInputElement> = (event) => setName(event.target.value);
-    const onChangeId: ChangeEventHandler<HTMLInputElement> = (event) => setId(event.target.value);
-    const onChangePassword: ChangeEventHandler<HTMLInputElement> = (event) => setPassword(event.target.value);
-    const onChangePasswordChecker: ChangeEventHandler<HTMLInputElement> = (event) => setPasswordChecker(event.target.value);
-    const onSubmitForm: FormEventHandler = async (event) => {
-        event.preventDefault();
-        const newUserReq: ICreateUserReq = { name, id, password };
-        console.log("this will be a new user", newUserReq, isSubmittable);
-        if (!isSubmittable) return;
-
-        try {
-            const createdUser: IUser = await Apis.post("/user/create", newUserReq);
-            // router.push(`/login`);
-            alert("created!");
-            signIn();
-            console.log("created!", createdUser);
-        } catch (error) {
-            if (axios.isAxiosError(error) && !!error.response) {
-                setIsError(true);
-                setError(error.response.data.message);
-            }
-        }
-    };
-
-    if (isError) {
-        router.push(`/error?message=${error}`);
-    }
+    // console.log(state.message);
 
     return (
-        <main>
-            <form className={Form.user} onSubmit={onSubmitForm}>
-                <h3 className={SubTitle.default}>Sign Up</h3>
-                <Input id="name" type="text" placeholder="NAME" value={name} onChange={onChangeName} />
-                <Input id="id" type="email" placeholder="Email" value={id} onChange={onChangeId} />
-                <Input id="password" type="password" placeholder="PASSWORD" value={password} onChange={onChangePassword} />
-                <Input id="passwordChecker" type="text" placeholder="PASSWORD CHECK" value={passwordChecker} onChange={onChangePasswordChecker} />
-                <button className={Button.default} type="submit">
-                    CREATE!!!
-                </button>
-            </form>
-        </main>
+        <form className={style.form} action={formAction}>
+            <h2 className={style.formTitle}>Sign Up</h2>
+            <div className={style.formInputWrapper}>
+                <label htmlFor="name">NAME</label>
+                <input id="name" name="name" type="text" placeholder="NAME" required />
+            </div>
+            <div className={style.formInputWrapper}>
+                <label htmlFor="id">EMAIL</label>
+                <input id="id" name="id" type="email" placeholder="EMAIL" required />
+            </div>
+            <div className={style.formInputWrapper}>
+                <label htmlFor="password">PASSWORD</label>
+                <input id="password" name="password" type="password" placeholder="PASSWORD" required />
+            </div>
+            <div className={style.formInputWrapper}>
+                <label htmlFor="passwordChecker">PASSWORD CHECK</label>
+                <input id="passwordChecker" name="passwordChecker" type="password" placeholder="PASSWORD CHECK" required />
+            </div>
+            <button type="submit" disabled={pending}>
+                SIGN UP!
+            </button>
+            <div className={style.formMessage}>{showMessage(state?.message)}</div>
+        </form>
     );
 }

@@ -1,7 +1,0 @@
-.default {
-    @apply mb-2 text-2xl text-center font-bold;
-}
-
-.small {
-    @apply mb-2 text-xl font-bold;
-}

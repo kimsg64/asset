@@ -5,11 +5,14 @@ const morgan = require("morgan"); // 콘솔에 req, res 기록
 
 const hpp = require("hpp"); // security
 const helmet = require("helmet"); // security
+const cookieParser = require("cookie-parser"); // cookie
+const session = require("express-session"); // session
 
 const mongoose = require("mongoose"); // DB
 const config = require("./configs/index"); // DB config
 
 const http = require("http"); // http core module
+
 /** [E] import modules */
 
 /** [S] use middlewares */
@@ -22,6 +25,11 @@ app.use(morgan("dev")); // 개발 환경에서 morgan 실행
 app.use(hpp());
 app.use(helmet());
 // [E] security
+
+// [S] cookie
+app.use(cookieParser());
+app.use(session({ secret: "nyam", resave: false, saveUninitialized: true }));
+// [E] cookie
 
 // [S] set DB port, uri
 const { MONGO_URI, PORT } = config;
