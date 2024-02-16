@@ -1,21 +1,21 @@
 export type TransactionType = "spending" | "income" | "transfer";
 
-export interface IDailyInput {
-    transactionType: TransactionType;
-    amount: number;
-    assetTypeId: string;
-    registeredDate: Date;
-    memo: string;
-    ownerId: string;
-    _id: string;
-    transferTo?: string;
-}
+export type SearchConditions = {
+	transactionType?: TransactionType;
+	assetTypeId?: string;
+	from?: string;
+	to?: string;
+	keyword?: string;
+};
 
-export interface IDailyInputReq {
-    transactionType: TransactionType;
-    amount: number;
-    assetTypeId: string;
-    registeredDate: Date;
-    ownerId: string;
-    memo: string;
+export interface IDailyInput {
+	transactionType: TransactionType;
+	amount: number;
+	assetTypeId: string;
+	registeredDate: Date;
+	memo: string;
+	ownerId: string;
+	_id: string;
+	transferTo?: string;
+	isFirstInput: boolean;
 }

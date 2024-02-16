@@ -11,12 +11,15 @@
     "dependencies": {
         "@tanstack/react-query": "^5.17.19",
         "@vanilla-extract/css": "^1.14.1",
+        "chart.js": "^4.4.1",
         "cookie": "^0.6.0",
         "dayjs": "^1.11.10",
         "next": "^14.0.4",
         "next-auth": "^5.0.0-beta.5",
         "react": "^18",
+        "react-chartjs-2": "^5.2.0",
         "react-dom": "^18",
+        "react-intersection-observer": "^9.8.0",
         "react-textarea-autosize": "^8.5.3",
         "zustand": "^4.5.0"
     },

@@ -1,44 +1,62 @@
 // react, next
-import React, { useEffect, useState } from "react";
-// custom modules
+import { MouseEvent } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
 import { IDailyInput } from "@/interfaces/IDaily";
-// custom styles
-import TableRowStyle from "./TableRow.module.css";
+import { IAsset } from "@/interfaces/IAsset";
+import { getSingleAsset } from "@/app/(afterLogin)/[userId]/_lib/getSingleAsset";
+import * as styles from "./tableRow.css";
 
-export default function TableRow({ transactionType, amount, assetTypeId, registeredDate, memo, _id, transferTo }: IDailyInput) {
-    const [assetName, setAssetName] = useState("");
-    useEffect(() => {
-        // console.log("check asset type id", assetTypeId);
-        getAssetName();
-    }, [assetTypeId]);
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+dayjs.extend(customParseFormat);
 
-    const onClickDelete = async () => {
-        console.log("try to delete this record!", _id);
-        try {
-            // await Apis.post("/daily/delete", { _id, assetTypeId }).then((res) => {
-            //     console.log("deleted!", res);
-            // });
-        } catch (error) {
-            console.log("cannot delete that one...");
-        }
-    };
+type Props = { userId: string; record: IDailyInput };
 
-    const getAssetName = async () => {
-        // const result = await Apis.get(`/asset/${assetTypeId}`);
-        // console.log("asset!!!", result.asset);
-        // setAssetName(result.asset?.name);
-    };
+export default function TableRow({ userId, record }: Props) {
+	const { data: asset } = useQuery<IAsset, Object, IAsset, [_1: string, string, _3: string, string]>({
+		queryKey: ["users", userId, "assets", record.assetTypeId],
+		queryFn: getSingleAsset,
+		staleTime: 60 * 1000,
+		gcTime: 300 * 1000,
+	});
+	const queryClient = useQueryClient();
 
-    return (
-        <ul className={TableRowStyle.default} key={_id}>
-            <li>{transactionType === "income" ? <span className="text-blue-600">수입</span> : transactionType === "spending" ? <span className="text-red-600">지출</span> : <span>이체</span>}</li>
-            <li>{assetName}</li>
-            <li>{registeredDate.toLocaleString("ko-KR", { timeZone: "UTC" })}</li>
-            <li>{amount.toLocaleString()}</li>
-            <li>{memo}</li>
-            <button type="button" onClick={onClickDelete}>
-                DELETE!
-            </button>
-        </ul>
-    );
+	const deleteRow = useMutation({
+		mutationFn: async (_event: MouseEvent) => {
+			console.log("is first?", record.isFirstInput);
+			if (record.isFirstInput) throw new Error("히히못지워");
+
+			return fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/daily/delete`, {
+				method: "DELETE",
+				credentials: "include",
+				headers: { "Content-Type": "application/json; charset=UTF-8" },
+				body: JSON.stringify({ _id: record._id }),
+			});
+		},
+		onMutate() {
+			queryClient.invalidateQueries({
+				queryKey: ["users", userId, "daily"],
+			});
+			queryClient.invalidateQueries({
+				queryKey: ["users", userId, "assets"],
+			});
+		},
+		onError() {
+			alert("히히못지워!");
+		},
+	});
+
+	return (
+		<ul className={styles.row}>
+			<li>{record.transactionType === "income" ? <span className={styles.surplus}>수입</span> : record.transactionType === "spending" ? <span className={styles.deficit}>지출</span> : <span>이체</span>}</li>
+			<li>{asset?.name}</li>
+			<li>{dayjs(record.registeredDate).format("YYYY-MM-DD HH:mm")}</li>
+			<li>{record.amount.toLocaleString()}</li>
+			<li>{record.memo}</li>
+			<button type="button" onClick={deleteRow.mutate}>
+				DELETE!
+			</button>
+		</ul>
+	);
 }
