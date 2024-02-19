@@ -54,9 +54,11 @@ export default function TableRow({ userId, record }: Props) {
 			<li>{dayjs(record.registeredDate).format("YYYY-MM-DD HH:mm")}</li>
 			<li>{record.amount.toLocaleString()}</li>
 			<li>{record.memo}</li>
-			<button type="button" onClick={deleteRow.mutate}>
-				DELETE!
-			</button>
+			<li>
+				<button type="button" className={styles.smallButton} onClick={deleteRow.mutate}>
+					DELETE!
+				</button>
+			</li>
 		</ul>
 	);
 }

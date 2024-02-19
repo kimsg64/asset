@@ -3,6 +3,7 @@ import Link from "next/link";
 import { auth } from "@/auth";
 
 import UserIcon from "./UserIcon";
+import ColorModeIcon from "./ColorModeIcon";
 import * as styles from "./afterLogin.css";
 
 export default async function Header() {
@@ -21,6 +22,7 @@ export default async function Header() {
 				<Link className={styles.navItem} href={`/${session?.user?.email}/daily`}>
 					일간
 				</Link>
+				<ColorModeIcon />
 			</nav>
 		</header>
 	);

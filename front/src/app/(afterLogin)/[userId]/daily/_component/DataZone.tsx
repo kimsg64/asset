@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEventHandler, FormEventHandler, MouseEventHandler, useState } from "react";
+import { ChangeEventHandler, FormEventHandler, MouseEventHandler, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { TransactionType } from "@/interfaces/IDaily";
 import { IAsset } from "@/interfaces/IAsset";
@@ -13,6 +13,7 @@ dayjs.extend(customParseFormat);
 import * as wrapperStyle from "@/app/(afterLogin)/[userId]/daily/dailyPage.css";
 import * as styles from "./dataZone.css";
 import RecordsZone from "./RecordsZone";
+import { useSearchParams } from "next/navigation";
 
 type Props = { userId: string };
 
@@ -30,6 +31,15 @@ export default function DataZone({ userId }: Props) {
 		staleTime: 60 * 1000,
 		gcTime: 300 * 1000,
 	});
+	const searchParams = useSearchParams();
+	const passedAssetTypeId = searchParams.get("asset");
+
+	useEffect(() => {
+		if (passedAssetTypeId) {
+			console.log("passedAssetTypeId", passedAssetTypeId);
+			setAssetTypeId(passedAssetTypeId);
+		}
+	}, [passedAssetTypeId]);
 
 	const onChangeTransactionType: ChangeEventHandler<HTMLSelectElement> = (event) => setTransactionType(event.target.value as TransactionType);
 	const onChangeAssetTypeId: ChangeEventHandler<HTMLSelectElement> = (event) => setAssetTypeId(event.target.value);
@@ -76,7 +86,6 @@ export default function DataZone({ userId }: Props) {
 					Reset
 				</button>
 			</form>
-			{/* <RecordsZone userId={userId} transactionType={transactionType} assetTypeId={assetTypeId} from={from} to={to} keyword={keyword} isFiltered={isFiltered} /> */}
 			<RecordsZone userId={userId} isFiltered={isFiltered} searchConditions={searchConditions} />
 		</section>
 	);

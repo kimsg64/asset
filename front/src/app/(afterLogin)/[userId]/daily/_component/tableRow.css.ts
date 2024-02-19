@@ -1,11 +1,12 @@
+import { global } from "@/app/globalTheme.css";
 import { style } from "@vanilla-extract/css";
 const commonRow = {
 	padding: 8,
 	display: "grid",
 	alignItems: "center",
 	gridTemplateColumns: "1fr 1fr 1fr 2fr 4fr 1fr",
-	border: "1px solid black",
-	borderBottom: "none",
+	backgroundColor: global.itemBackground.color,
+	borderBottom: `1px solid #ffffff`,
 };
 export const row = style({
 	...commonRow,
@@ -15,10 +16,16 @@ export const header = style({
 	...commonRow,
 	fontWeight: "bold",
 	textAlign: "center",
+	backgroundColor: global.foreground.color,
+	borderTopLeftRadius: 4,
+	borderTopRightRadius: 4,
 });
 export const deficit = style({
-	color: "red",
+	color: global.font.color.red,
 });
 export const surplus = style({
-	color: "blue",
+	color: global.font.color.blue,
+});
+export const smallButton = style({
+	width: "80%",
 });

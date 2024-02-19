@@ -12,6 +12,7 @@ import { faker } from "@faker-js/faker";
 
 import * as styles from "./itemBoxes.css";
 import ItemBox from "./ItemBox";
+import { global } from "@/app/globalTheme.css";
 
 type Props = { userId: string };
 
@@ -34,7 +35,10 @@ export default function ItemBoxesZone({ userId }: Props) {
 			},
 		],
 	};
-	console.log("chart", chartData);
+	const chartOptions = {
+		maintainAspectRatio: false, // 종횡비를 유지하지 않음
+		responsive: true,
+	};
 
 	return (
 		<>
@@ -49,20 +53,20 @@ export default function ItemBoxesZone({ userId }: Props) {
 							<div className={styles.emptyBox}></div>
 							<div className={styles.emptyBox}></div>
 							<div className={styles.emptyBox}>
-								<Doughnut data={chartData} className={styles.emptyBox} />
+								<Doughnut data={chartData} options={chartOptions} className={styles.emptyBox} />
 							</div>
 						</>
 					) : assets?.length % 3 === 1 ? (
 						<>
 							<div className={styles.emptyBox}></div>
 							<div className={styles.emptyBox}>
-								<Doughnut data={chartData} className={styles.emptyBox} />
+								<Doughnut data={chartData} options={chartOptions} className={styles.emptyBox} />
 							</div>
 						</>
 					) : (
 						<>
 							<div className={styles.emptyBox}>
-								<Doughnut data={chartData} className={styles.emptyBox} />
+								<Doughnut data={chartData} options={chartOptions} className={styles.emptyBox} />
 							</div>
 						</>
 					))}

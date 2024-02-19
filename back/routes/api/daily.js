@@ -22,16 +22,16 @@ const findUser = async (email) => {
 router.get("/:userId", async (req, res) => {
 	try {
 		const userId = req.params.userId;
-		const cursor = parseInt(req.query.cursor);
-		const numberOfPages = 10;
-		const skipped = cursor * numberOfPages;
+		const cursor = +req.query.cursor;
+		const recordsPerPage = 10;
+		const skipped = cursor * recordsPerPage;
 		console.log("requsetparams!!!!!", userId);
 		console.log("requsetquerystring!!!!!", cursor);
 		console.log(`${skipped} records were sent already.`);
 		// (커서+1) x 2개만큼 반환하기! (현재 페이지와 같이)
 		const user_Id = await findUser(userId);
-		const records = await Daily.find({ ownerId: user_Id }).sort({ registeredDate: -1 }).skip(skipped).limit(numberOfPages);
-		// const records = await Daily.find({ ownerId: user_Id }).skip(skipped).limit(numberOfPages);
+		const records = await Daily.find({ ownerId: user_Id }).sort({ registeredDate: -1 }).skip(skipped).limit(recordsPerPage);
+		// const records = await Daily.find({ ownerId: user_Id }).skip(skipped).limit(recordsPerPage);
 		// 몽구스 내부에서 쓰기 위해 find의 결과 값은 좀 다르게 생겼다. 따라서 toObject()를 통해 모델과 같은 모양의 객체를 가져와야 함
 		const formattedRecords = records.map((record) => ({ ...record.toObject(), registeredDate: moment(record.registeredDate).format("YYYY-MM-DD HH:mm") }));
 		console.log("how many records do you have?", records.length);

@@ -1,3 +1,4 @@
+import { global } from "@/app/globalTheme.css";
 import { style } from "@vanilla-extract/css";
 const commonAmount = {
 	fontSize: "2rem",
@@ -26,7 +27,8 @@ export const itemBox = style({
 	justifyContent: "space-between",
 	alignItems: "center",
 	textAlign: "left",
-	backgroundColor: "skyblue",
+	backgroundColor: global.itemBackground.color,
+	borderRadius: 12,
 });
 export const infoZone = style({
 	width: "100%",
@@ -41,16 +43,16 @@ export const amount = style({
 });
 export const amountMinus = style({
 	...commonAmount,
-	color: "red",
+	color: global.font.color.red,
 });
 export const amountPlus = style({
 	...commonAmount,
-	color: "blue",
+	color: global.font.color.blue,
 });
 export const description = style({
 	// marginTop: 4,
 	fontSize: "0.8rem",
-	color: "rgb(127, 127, 127)",
+	color: global.font.color.gray,
 });
 export const closeButton = style({
 	width: 24,
@@ -72,6 +74,7 @@ export const closeButtonInner = style({
 });
 export const itemBoxInput = style({
 	width: "100%",
+	backgroundColor: global.background.color,
 });
 export const buttonsZone = style({
 	width: "100%",
@@ -82,13 +85,6 @@ export const buttonsZone = style({
 export const button = style({
 	flexGrow: 1,
 });
-// export const updatingButtonsZone = style({
-//     width: "100%",
-//     display: "grid",
-//     gridTemplateColumns: "1fr 1fr 1fr 1fr",
-//     gap: 12,
-//     marginTop: 20,
-// });
 
 export const totalZone = style({
 	width: "100%",
