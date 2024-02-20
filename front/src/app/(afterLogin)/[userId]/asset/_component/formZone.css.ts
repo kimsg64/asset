@@ -1,3 +1,4 @@
+import { global } from "@/app/globalTheme.css";
 import { style } from "@vanilla-extract/css";
 
 export const form = style({
@@ -20,8 +21,16 @@ export const grownFormInputWrapper = style({
 export const formInputLabel = style({
 	width: 80,
 });
+export const coloredInput = style({
+	"::placeholder": {
+		color: global.font.color.base,
+	},
+});
 export const grownFormInput = style({
 	flexGrow: 1,
+	"::placeholder": {
+		color: global.font.color.base,
+	},
 });
 export const formButton = style({
 	maxWidth: 120,

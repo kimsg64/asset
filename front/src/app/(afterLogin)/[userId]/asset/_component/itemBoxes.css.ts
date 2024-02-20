@@ -50,7 +50,6 @@ export const amountPlus = style({
 	color: global.font.color.blue,
 });
 export const description = style({
-	// marginTop: 4,
 	fontSize: "0.8rem",
 	color: global.font.color.gray,
 });

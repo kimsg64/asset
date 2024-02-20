@@ -35,6 +35,9 @@ export const textarea = style({
 	minHeight: 100,
 	marginTop: 24,
 	marginBottom: 12,
+	"::placeholder": {
+		color: global.font.color.base,
+	},
 });
 export const buttonsZone = style({
 	display: "flex",

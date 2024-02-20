@@ -12,6 +12,11 @@ export const row = style({
 	...commonRow,
 	textAlign: "center",
 });
+export const formRow = style({
+	padding: 8,
+	backgroundColor: global.itemBackground.color,
+	borderBottom: `1px solid #ffffff`,
+});
 export const header = style({
 	...commonRow,
 	fontWeight: "bold",
@@ -26,6 +31,11 @@ export const deficit = style({
 export const surplus = style({
 	color: global.font.color.blue,
 });
-export const smallButton = style({
-	width: "80%",
+export const flexCell = style({
+	display: "flex",
+	gap: 4,
+});
+export const buttonInCell = style({
+	flexGrow: 1,
+	margin: 0,
 });

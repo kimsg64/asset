@@ -56,19 +56,19 @@ export default function FormZone({ userId }: Props) {
 				<label className={styles.formInputLabel} htmlFor="name">
 					자산명
 				</label>
-				<input id="name" type="text" placeholder="자산명" value={name} onChange={onChangeName} />
+				<input id="name" className={styles.coloredInput} type="text" placeholder="자산명" value={name} onChange={onChangeName} />
 			</div>
 			<div className={styles.formInputWrapper}>
 				<label className={styles.formInputLabel} htmlFor="amount">
 					금액
 				</label>
-				<input id="amount" type="text" placeholder="금액" maxLength={20} value={amount.toLocaleString()} onChange={onChangeAmount} />
+				<input id="amount" type="text" maxLength={20} value={amount.toLocaleString()} onChange={onChangeAmount} />
 			</div>
 			<div className={styles.grownFormInputWrapper}>
 				<label className={styles.formInputLabel} htmlFor="memo">
 					메모
 				</label>
-				<input className={styles.grownFormInput} id="memo" type="text" placeholder="메모" value={memo} onChange={onChangeMemo} />
+				<input id="memo" className={styles.grownFormInput} type="text" placeholder="메모" value={memo} onChange={onChangeMemo} />
 			</div>
 
 			<button className={styles.formButton} type="submit">

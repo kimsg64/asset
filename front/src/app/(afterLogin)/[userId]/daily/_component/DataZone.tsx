@@ -64,11 +64,11 @@ export default function DataZone({ userId }: Props) {
 		<section className={wrapperStyle.wrapper}>
 			<form className={styles.form} onSubmit={onSubmitFilterConditions}>
 				<h3>검색</h3>
-				<select className={styles.selectBox} id="transactionType" value={transactionType} onChange={onChangeTransactionType}>
+				<select id="transactionType" className={styles.selectBox} value={transactionType} onChange={onChangeTransactionType}>
 					<option value="spending">지출</option>
 					<option value="income">수입</option>
 				</select>
-				<select className={styles.selectBox} id="assetType" value={assetTypeId} onChange={onChangeAssetTypeId}>
+				<select id="assetType" className={styles.selectBox} value={assetTypeId} onChange={onChangeAssetTypeId}>
 					<option value="none">자산 선택</option>
 					{assets?.map((asset) => (
 						<option key={asset._id} value={asset._id}>
@@ -76,9 +76,9 @@ export default function DataZone({ userId }: Props) {
 						</option>
 					))}
 				</select>
-				<input className={styles.calendar} id="from" type="date" placeholder="From" value={from} onChange={onChangeFrom} />
-				<input className={styles.calendar} id="to" type="date" placeholder="To" value={to} onChange={onChangeTo} />
-				<input id="keyword" type="text" placeholder="검색" value={keyword} onChange={onChangeKeyword} />
+				<input id="from" className={styles.calendar} type="date" placeholder="From" value={from} onChange={onChangeFrom} />
+				<input id="to" className={styles.calendar} type="date" placeholder="To" value={to} onChange={onChangeTo} />
+				<input id="keyword" className={styles.coloredInput} type="text" placeholder="검색" value={keyword} onChange={onChangeKeyword} />
 				<button type="submit" className={styles.formButton}>
 					Search
 				</button>

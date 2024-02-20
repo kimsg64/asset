@@ -3,7 +3,7 @@ import Link from "next/link";
 import { auth } from "@/auth";
 
 import UserIcon from "./UserIcon";
-import ColorModeIcon from "./ColorModeIcon";
+// import ThemeIcon from "./ThemeIcon";
 import * as styles from "./afterLogin.css";
 
 export default async function Header() {
@@ -15,14 +15,14 @@ export default async function Header() {
 			<Link href={`/home`}>
 				<h2>Learning Next.js</h2>
 			</Link>
-			<nav>
+			<nav className={styles.navContainer}>
 				<Link className={styles.navItem} href={`/${session?.user?.email}/asset`}>
 					자산
 				</Link>
 				<Link className={styles.navItem} href={`/${session?.user?.email}/daily`}>
 					일간
 				</Link>
-				<ColorModeIcon />
+				{/* <ThemeIcon /> */}
 			</nav>
 		</header>
 	);

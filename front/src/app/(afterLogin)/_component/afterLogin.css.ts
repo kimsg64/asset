@@ -28,10 +28,13 @@ export const username = style({
 	fontSize: "1.2rem",
 	fontWeight: "bold",
 });
+export const navContainer = style({
+	display: "flex",
+	alignItems: "center",
+	gap: 12,
+});
 export const navItem = style({
 	height: "100%",
-	display: "inline-block",
-	marginLeft: 12,
 });
 export const icon = style({
 	width: 48,

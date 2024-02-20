@@ -1,4 +1,4 @@
-import { assignVars, createGlobalTheme, createGlobalThemeContract, globalStyle } from "@vanilla-extract/css";
+import { assignVars, createGlobalTheme, createGlobalThemeContract, createTheme, createThemeContract, globalStyle, style } from "@vanilla-extract/css";
 
 const darkBaseColor = "#2c3e50";
 const lightBaseColor = "#dee8f1";
@@ -15,7 +15,7 @@ const fontRedColor = "#ff7f7f";
 const lightFontGrayColor = "#7f7f7f";
 const darkFontGrayColor = darkBaseColor;
 
-export const global = createGlobalThemeContract({
+const themeStructure = {
 	background: {
 		color: "bg-color",
 	},
@@ -33,8 +33,10 @@ export const global = createGlobalThemeContract({
 			gray: "gray",
 		},
 	},
-});
-const darkGlobalTheme = {
+};
+export const global = createGlobalThemeContract({ ...themeStructure });
+// export const theme = createThemeContract({ ...themeStructure });
+const darkTheme = {
 	background: { color: darkBaseColor },
 	foreground: { color: brandColor },
 	itemBackground: { color: darkItemBaseColor },
@@ -47,7 +49,7 @@ const darkGlobalTheme = {
 		},
 	},
 };
-const lightGlobalTheme = {
+const lightTheme = {
 	background: { color: lightBaseColor },
 	foreground: { color: brandColor },
 	itemBackground: { color: lightItemBaseColor },
@@ -60,19 +62,15 @@ const lightGlobalTheme = {
 		},
 	},
 };
-createGlobalTheme(":root", global, lightGlobalTheme);
+
+// global theme: 브라우저의 모드를 체크하여 theme 전환
+createGlobalTheme(":root", global, lightTheme);
 globalStyle(":root", {
 	"@media": {
 		"(prefers-color-scheme: dark)": {
-			vars: assignVars(global, darkGlobalTheme),
+			vars: assignVars(global, darkTheme),
 		},
 	},
-});
-globalStyle("*", {
-	boxSizing: "border-box",
-	padding: 0,
-	margin: 0,
-	wordBreak: "keep-all",
 });
 globalStyle("html", {
 	"@media": {
@@ -80,6 +78,19 @@ globalStyle("html", {
 			colorScheme: "dark",
 		},
 	},
+});
+
+// local theme: JS로 theme을 제어
+// createTheme(theme, lightTheme);
+// createTheme(theme, darkTheme);
+
+// theme 외의 공통 스타일
+globalStyle("*", {
+	boxSizing: "border-box",
+	padding: 0,
+	margin: 0,
+	wordBreak: "keep-all",
+	transition: "background-color 0.3s, color 0.3s",
 });
 globalStyle("html, body", {
 	maxWidth: "100dvw",
@@ -97,16 +108,16 @@ globalStyle("a", {
 	color: "inherit",
 	textDecoration: "none",
 });
-const globalInputStyle = {
+const inputStyle = {
 	padding: "8px 12px",
 	outline: "none",
 	border: "none",
 	backgroundColor: global.itemBackground.color,
 	borderRadius: 4,
 };
-globalStyle("input", { ...globalInputStyle });
-globalStyle("textarea", { ...globalInputStyle });
-globalStyle("select", { ...globalInputStyle });
+globalStyle("input", { ...inputStyle });
+globalStyle("textarea", { ...inputStyle });
+globalStyle("select", { ...inputStyle });
 globalStyle("label", {
 	width: 120,
 	display: "inline-block",

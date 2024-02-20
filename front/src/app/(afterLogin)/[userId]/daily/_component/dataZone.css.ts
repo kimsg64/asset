@@ -1,3 +1,4 @@
+import { global } from "@/app/globalTheme.css";
 import { style } from "@vanilla-extract/css";
 
 export const form = style({
@@ -19,4 +20,9 @@ export const calendar = style({
 export const formButton = style({
 	maxWidth: 120,
 	margin: 0,
+});
+export const coloredInput = style({
+	"::placeholder": {
+		color: global.font.color.base,
+	},
 });
