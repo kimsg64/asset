@@ -20,8 +20,8 @@ type Props = { userId: string };
 export default function DataZone({ userId }: Props) {
 	const [transactionType, setTransactionType] = useState<TransactionType>("spending");
 	const [assetTypeId, setAssetTypeId] = useState("");
-	const [from, setFrom] = useState(dayjs(new Date()).format("YYYY-MM-DD"));
-	const [to, setTo] = useState(dayjs(new Date()).format("YYYY-MM-DD"));
+	const [from, setFrom] = useState(dayjs().startOf("month").format("YYYY-MM-DD"));
+	const [to, setTo] = useState(dayjs().format("YYYY-MM-DD"));
 	const [keyword, setKeyword] = useState("");
 	const [searchConditions, setSearchConditions] = useState({});
 	const [isFiltered, setIsFiltered] = useState(false);
@@ -54,8 +54,8 @@ export default function DataZone({ userId }: Props) {
 	const reset: MouseEventHandler = () => {
 		setTransactionType("spending");
 		setAssetTypeId("");
-		setFrom(dayjs(new Date()).format("YYYY-MM-DD"));
-		setTo(dayjs(new Date()).format("YYYY-MM-DD"));
+		setFrom(dayjs().format("YYYY-MM-DD"));
+		setTo(dayjs().format("YYYY-MM-DD"));
 		setKeyword("");
 		setIsFiltered(false);
 	};

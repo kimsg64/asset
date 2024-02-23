@@ -1,23 +1,9 @@
 import { global } from "@/app/globalTheme.css";
 import { style } from "@vanilla-extract/css";
 
-export const modalBackdrop = style({
-	width: "100dvw",
-	height: "100dvh",
-	background: "rgba(0, 0, 0, 0.3)",
-	position: "fixed",
-	zIndex: 10,
-	top: 0,
-	left: 0,
-});
 export const modalBody = style({
 	width: 600,
 	padding: 32,
-	background: global.background.color,
-	position: "relative",
-	top: "50%",
-	left: "50%",
-	transform: "translate(-50%, -50%)",
 });
 
 export const alert = style({

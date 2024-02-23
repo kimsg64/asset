@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { DefaultError, InfiniteData, useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
-import { useTotalAssetStore } from "@/store/totalAsset";
+import { useModalStore } from "@/store/modal";
+// import { useTotalAssetStore } from "@/store/totalAsset";
 
 import dayjs from "dayjs";
 
@@ -12,13 +15,15 @@ import { getDailyRecords } from "../_lib/getDailyRecords";
 
 import TableRow from "./TableRow";
 import * as styles from "./tableRow.css";
-import { useSearchParams } from "next/navigation";
 
 type Props = { userId: string; isFiltered: boolean; searchConditions: SearchConditions };
 const RECORDS_PER_PAGE = 10;
 
 export default function RecordsZone({ userId, isFiltered, searchConditions }: Props) {
-	const totalAssetStore = useTotalAssetStore();
+	// const totalAssetStore = useTotalAssetStore();
+	const modalStore = useModalStore();
+	const { data: session } = useSession();
+	const router = useRouter();
 	const {
 		data: dailyRecords,
 		hasNextPage,
@@ -55,8 +60,12 @@ export default function RecordsZone({ userId, isFiltered, searchConditions }: Pr
 		}
 	}, [inView, isFetching, hasNextPage, dailyRecords, fetchNextPage]);
 
-	console.log(`transactionType: ${searchConditions.transactionType}, assetTypeId: ${searchConditions.assetTypeId}, from: ${searchConditions.from}, to: ${searchConditions.to}, keyword: ${searchConditions.keyword}, isFiltered: ${isFiltered}`);
+	// console.log(`transactionType: ${searchConditions.transactionType}, assetTypeId: ${searchConditions.assetTypeId}, from: ${searchConditions.from}, to: ${searchConditions.to}, keyword: ${searchConditions.keyword}, isFiltered: ${isFiltered}`);
 	// console.log("records!!!", dailyRecords);
+	const onClickStats = () => {
+		modalStore.setIsOverflowHidden(true);
+		router.push(`/${session?.user?.email}/daily/stats`);
+	};
 
 	return (
 		<>
@@ -66,27 +75,29 @@ export default function RecordsZone({ userId, isFiltered, searchConditions }: Pr
 				<div>발생일</div>
 				<div>금액</div>
 				<div>메모</div>
-				<div className={totalAssetStore.totalAsset < 0 ? styles.deficit : totalAssetStore.totalAsset > 0 ? styles.surplus : ""}>합계 {totalAssetStore.totalAsset.toLocaleString()}</div>
+				<button className={[styles.buttonInCell, styles.reverseButton].join(" ")} onClick={onClickStats}>
+					통계
+				</button>
+				{/* <div className={totalAssetStore.totalAsset < 0 ? styles.deficit : totalAssetStore.totalAsset > 0 ? styles.surplus : ""}>합계 {totalAssetStore.totalAsset.toLocaleString()}</div> */}
 			</div>
-			{dailyRecords?.pages?.map((page) =>
-				page
-					.filter((rec) => {
-						if (!!passedAssetTypeId && !isFiltered) return rec.assetTypeId === passedAssetTypeId; // 검색 안하고 상세로 들어왔을 때
-						if (isFiltered) {
-							// 검색할 때
-							let conditions = rec.transactionType === searchConditions.transactionType;
-							if (!!searchConditions.keyword) conditions = conditions && rec.memo.includes(searchConditions.keyword);
-							if (!!searchConditions.assetTypeId && searchConditions.assetTypeId !== "none") conditions = conditions && rec.assetTypeId === searchConditions.assetTypeId;
+			{dailyRecords?.pages?.map((page, pageIdx) => {
+				const filtered = page.filter((rec) => {
+					if (!!passedAssetTypeId && !isFiltered) return rec.assetTypeId === passedAssetTypeId; // 검색 안하고 상세로 들어왔을 때
+					if (isFiltered) {
+						// 검색할 때
+						let conditions = rec.transactionType === searchConditions.transactionType;
+						if (!!searchConditions.keyword) conditions = conditions && rec.memo.includes(searchConditions.keyword);
+						if (!!searchConditions.assetTypeId && searchConditions.assetTypeId !== "none") conditions = conditions && rec.assetTypeId === searchConditions.assetTypeId;
 
-							if (!!searchConditions.from) conditions = conditions && dayjs(rec.registeredDate).isAfter(dayjs(searchConditions.from).startOf("day"));
-							if (!!searchConditions.to) conditions = conditions && dayjs(rec.registeredDate).isBefore(dayjs(searchConditions.to).endOf("day"));
+						if (!!searchConditions.from) conditions = conditions && dayjs(rec.registeredDate).isAfter(dayjs(searchConditions.from).startOf("day"));
+						if (!!searchConditions.to) conditions = conditions && dayjs(rec.registeredDate).isBefore(dayjs(searchConditions.to).endOf("day"));
 
-							return conditions;
-						}
-						return rec; // default
-					})
-					.map((rec) => <TableRow key={rec._id} userId={userId} record={rec} />)
-			)}
+						return conditions;
+					}
+					return rec; // default
+				});
+				return filtered.length > 0 ? filtered.map((rec) => <TableRow key={rec._id} userId={userId} record={rec} />) : pageIdx === 0 && <div className={styles.noData}>NO DATA!!!!</div>;
+			})}
 			<div ref={ref} style={{ height: 50 }}></div>
 		</>
 	);

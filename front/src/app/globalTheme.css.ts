@@ -128,9 +128,13 @@ globalStyle("button", {
 	padding: "8px",
 	fontWeight: "bold",
 	cursor: "pointer",
-	backgroundColor: global.foreground.color,
+	backgroundColor: global.background.color,
+	transitionDuration: "background-color 0.2s",
 	border: "none",
 	borderRadius: 4,
+});
+globalStyle("button:active", {
+	backgroundColor: global.foreground.color,
 });
 globalStyle("li", {
 	listStyle: "none",

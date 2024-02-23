@@ -2,6 +2,7 @@ import { global } from "@/app/globalTheme.css";
 import { style } from "@vanilla-extract/css";
 
 export const form = style({
+	width: "80dvw",
 	marginTop: 40,
 	display: "flex",
 	justifyContent: "flex-start",

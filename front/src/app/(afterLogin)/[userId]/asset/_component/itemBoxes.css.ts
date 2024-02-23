@@ -10,13 +10,13 @@ const commonBox = {
 };
 
 export const gridZone = style({
-	width: "100%",
+	width: "80dvw",
 	padding: "40px 0",
 	display: "grid",
 	gridTemplateColumns: "1fr 1fr 1fr",
 	gap: 40,
 });
-export const emptyBox = style({
+export const chartWrapper = style({
 	...commonBox,
 });
 export const itemBox = style({

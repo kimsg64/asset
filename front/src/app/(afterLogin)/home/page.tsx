@@ -60,17 +60,18 @@ export default function Page() {
 					<li className={styles.listItem}>자산 차트</li>
 					<ul className={styles.list}>
 						<h5 className={styles.todo}>To Do</h5>
-						<li className={styles.listItem}>모달 버그: 모달 생성 시 헤더 사라짐</li>
+						<li className={[styles.listItem, styles.done].join(" ")}>모달 버그: 모달 생성 시 헤더 사라짐</li>
+						<li className={[styles.listItem, styles.done].join(" ")}>스크롤 방지</li>
 					</ul>
 				</ul>
 				<ul className={styles.list}>
 					<h4 className={styles.listTitle}>일간 기록</h4>
-					<li className={styles.listItem}>기록 생성, 삭제, 조회</li>
+					<li className={styles.listItem}>기록 생성, 삭제, 수정, 조회</li>
 					<li className={styles.listItem}>기록 검색</li>
 					<li className={styles.listItem}>무한 스크롤</li>
 					<ul className={styles.list}>
 						<h5 className={styles.todo}>To Do</h5>
-						<li className={styles.listItem}>기록 수정</li>
+						<li className={[styles.listItem, styles.done].join(" ")}>기록 수정</li>
 						<li className={styles.listItem}>일간, 월간, 연간 통계</li>
 					</ul>
 				</ul>

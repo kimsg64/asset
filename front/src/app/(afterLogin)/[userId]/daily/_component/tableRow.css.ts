@@ -39,3 +39,12 @@ export const buttonInCell = style({
 	flexGrow: 1,
 	margin: 0,
 });
+export const noData = style({
+	textAlign: "center",
+	padding: "12rem",
+	fontSize: "4rem",
+	backgroundColor: global.itemBackground.color,
+});
+export const reverseButton = style({
+	backgroundColor: global.itemBackground.color,
+});

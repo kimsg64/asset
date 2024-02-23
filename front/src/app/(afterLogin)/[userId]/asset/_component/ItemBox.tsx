@@ -48,14 +48,14 @@ export default function ItemBox({ asset, userId, isTransferable }: Props) {
 		const newSearchParams = new URLSearchParams(searchParams);
 		newSearchParams.set("type", "transfer");
 		modalStore.setIsOverflowHidden(true);
-		router.push(`/${userId}/asset/i/${asset._id}?${newSearchParams.toString()}`);
+		router.push(`/${userId}/asset/i/${asset._id}?${newSearchParams.toString()}`, { scroll: false });
 	};
 	const onClickDelete = () => {
 		const newSearchParams = new URLSearchParams(searchParams);
 		newSearchParams.set("type", "delete");
 		newSearchParams.set("name", asset.name);
 		modalStore.setIsOverflowHidden(true);
-		router.push(`/${userId}/asset/i/${asset._id}?${newSearchParams.toString()}`);
+		router.push(`/${userId}/asset/i/${asset._id}?${newSearchParams.toString()}`, { scroll: false });
 	};
 	const onClickNavigate = () => {
 		const newSearchParams = new URLSearchParams(searchParams);

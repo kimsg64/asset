@@ -10,17 +10,18 @@ dayjs.extend(customParseFormat);
 
 // custom modules
 import { IAsset } from "@/interfaces/IAsset";
-import { TransactionType } from "@/interfaces/IDaily";
+import { IDailyInput, TransactionType } from "@/interfaces/IDaily";
 import { getAssets } from "../../_lib/getAssets";
 import { useTotalAssetStore } from "@/store/totalAsset";
+import { useModalStore, useUpdateModalStore } from "@/store/modal";
 import * as styles from "./formZone.css";
 
-type Props = { userId: string };
+type Props = { userId: string; rec?: IDailyInput };
 
-export default function FormZone({ userId }: Props) {
+export default function FormZone({ userId, rec }: Props) {
 	const [transactionType, setTransactionType] = useState("spending");
 	const [assetTypeId, setAssetTypeId] = useState("");
-	const [registeredDate, setRegisteredDate] = useState(dayjs(new Date()).format("YYYY-MM-DD"));
+	const [registeredDate, setRegisteredDate] = useState(dayjs().format("YYYY-MM-DD"));
 	const [registeredHour, setRegisteredHour] = useState("00");
 	const [registeredMinute, setRegisteredMinute] = useState("00");
 	const [amount, setAmount] = useState(0);
@@ -35,12 +36,13 @@ export default function FormZone({ userId }: Props) {
 	});
 	const queryClient = useQueryClient();
 	const totalAssetStore = useTotalAssetStore();
+	const modalStore = useModalStore();
+	const updateModalStore = useUpdateModalStore();
 
 	if (assets?.length === 0) {
 		alert("you should have at least ONE asset!");
 		router.push(`/${userId}/asset`);
 	}
-
 	useEffect(() => {
 		totalAssetStore.setTotalAsset(
 			assets?.reduce((accumulator, currentAsset) => {
@@ -48,6 +50,22 @@ export default function FormZone({ userId }: Props) {
 			}, 0) as number
 		);
 	}, [totalAssetStore.setTotalAsset, assets]);
+
+	// update modal
+	useEffect(() => {
+		if (!!rec) {
+			setTransactionType(rec.transactionType);
+			setAssetTypeId(rec.assetTypeId);
+			const [date, hour, minute] = dayjs(new Date(rec.registeredDate)).format("YYYY-MM-DD HH mm").split(" ");
+			setRegisteredDate(date);
+			setRegisteredHour(hour);
+			setRegisteredMinute(minute);
+			setAmount(rec.amount);
+			setMemo(rec.memo);
+		}
+	}, [rec]);
+	// console.log(`rec:`, rec);
+	// update modal
 
 	const createInput = useMutation({
 		mutationFn: async () => {
@@ -73,11 +91,41 @@ export default function FormZone({ userId }: Props) {
 
 			setTransactionType("spending");
 			setAssetTypeId("");
-			setRegisteredDate(dayjs(new Date()).format("YYYY-MM-DD"));
+			setRegisteredDate(dayjs().format("YYYY-MM-DD"));
 			setRegisteredHour("");
 			setRegisteredMinute("");
 			setAmount(0);
 			setMemo("");
+		},
+		onError(error, _variables, _context) {
+			console.log(error);
+		},
+	});
+	const updateInput = useMutation({
+		mutationFn: async () => {
+			const fullRegisteredDate = new Date(`${registeredDate} ${registeredHour}:${registeredMinute}`);
+			const newDailyInputReq = {
+				_id: rec?._id,
+				transactionType: transactionType as TransactionType,
+				amount,
+				assetTypeId,
+				registeredDate: fullRegisteredDate,
+				memo,
+			};
+			return fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/daily/update`, {
+				method: "POST",
+				credentials: "include",
+				headers: { "Content-Type": "application/json; charset=UTF-8" },
+				body: JSON.stringify(newDailyInputReq),
+			});
+		},
+		onSuccess(_data, _variables, _context) {
+			queryClient.invalidateQueries({ queryKey: ["users", userId, "assets"] });
+			queryClient.invalidateQueries({ queryKey: ["users", userId, "daily"] });
+
+			modalStore.setIsOverflowHidden(false);
+			updateModalStore.setRec(null);
+			router.back();
 		},
 		onError(error, _variables, _context) {
 			console.log(error);
@@ -105,7 +153,8 @@ export default function FormZone({ userId }: Props) {
 			return;
 		}
 
-		createInput.mutate();
+		if (!!rec) updateInput.mutate();
+		else createInput.mutate();
 	};
 
 	return (
@@ -147,9 +196,15 @@ export default function FormZone({ userId }: Props) {
 			<input id="amount" type="text" placeholder="금액" maxLength={20} value={amount.toLocaleString()} onChange={onChangeAmount} />
 			<input className={styles.grownFormInput} id="memo" type="text" placeholder="메모" value={memo} onChange={onChangeMemo} />
 
-			<button className={styles.formButton} type="submit">
-				입력하기
-			</button>
+			{!!rec ? (
+				<button className={styles.formButton} type="submit">
+					수정하기
+				</button>
+			) : (
+				<button className={styles.formButton} type="submit">
+					입력하기
+				</button>
+			)}
 			{message && <div className={styles.error}>{message}</div>}
 		</form>
 	);

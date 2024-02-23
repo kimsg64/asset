@@ -4,15 +4,15 @@ import { useQuery } from "@tanstack/react-query";
 
 import { IAsset } from "@/interfaces/IAsset";
 import { getAssets } from "@/app/(afterLogin)/[userId]/_lib/getAssets";
+import { useRandomColors } from "@/app/(afterLogin)/[userId]/_lib/useRandomColors";
 
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { ArcElement, Chart, ChartOptions, ChartData, Legend, Tooltip } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
-ChartJS.register(ArcElement, Tooltip, Legend);
-import { faker } from "@faker-js/faker";
+// import ChartDataLabels from "chartjs-plugin-datalabels";
+Chart.register(ArcElement, Legend, Tooltip);
 
 import * as styles from "./itemBoxes.css";
 import ItemBox from "./ItemBox";
-import { global } from "@/app/globalTheme.css";
 
 type Props = { userId: string };
 
@@ -23,19 +23,20 @@ export default function ItemBoxesZone({ userId }: Props) {
 		staleTime: 60 * 1000,
 		gcTime: 300 * 1000,
 	});
+	const colors = useRandomColors(assets?.length as number);
 
 	const moreThanTwo = !!assets && assets.length > 1;
 	const totalAmount = assets?.reduce((accumulator, currentAsset) => accumulator + currentAsset.amount, 0) as number;
-	const chartData = {
-		labels: assets?.map((asset) => asset.name),
+	const chartData: ChartData<"doughnut"> = {
+		labels: assets?.map((asset) => `${asset.name}(${Math.round((asset.amount / totalAmount) * 100)}%)`),
 		datasets: [
 			{
-				data: assets?.map((asset) => asset.amount),
-				backgroundColor: assets?.map((asset, idx) => faker.color.rgb({ casing: "upper" })),
+				data: assets?.map((asset) => asset.amount)!,
+				backgroundColor: colors,
 			},
 		],
 	};
-	const chartOptions = {
+	const chartOptions: ChartOptions<"doughnut"> = {
 		maintainAspectRatio: false, // 종횡비를 유지하지 않음
 		responsive: true,
 	};
@@ -50,23 +51,23 @@ export default function ItemBoxesZone({ userId }: Props) {
 					assets.length > 0 &&
 					(assets?.length % 3 === 0 ? (
 						<>
-							<div className={styles.emptyBox}></div>
-							<div className={styles.emptyBox}></div>
-							<div className={styles.emptyBox}>
-								<Doughnut data={chartData} options={chartOptions} className={styles.emptyBox} />
+							<div className={styles.chartWrapper}></div>
+							<div className={styles.chartWrapper}></div>
+							<div className={styles.chartWrapper}>
+								<Doughnut data={chartData} options={chartOptions} className={styles.chartWrapper} />
 							</div>
 						</>
 					) : assets?.length % 3 === 1 ? (
 						<>
-							<div className={styles.emptyBox}></div>
-							<div className={styles.emptyBox}>
-								<Doughnut data={chartData} options={chartOptions} className={styles.emptyBox} />
+							<div className={styles.chartWrapper}></div>
+							<div className={styles.chartWrapper}>
+								<Doughnut data={chartData} options={chartOptions} className={styles.chartWrapper} />
 							</div>
 						</>
 					) : (
 						<>
-							<div className={styles.emptyBox}>
-								<Doughnut data={chartData} options={chartOptions} className={styles.emptyBox} />
+							<div className={styles.chartWrapper}>
+								<Doughnut data={chartData} options={chartOptions} className={styles.chartWrapper} />
 							</div>
 						</>
 					))}

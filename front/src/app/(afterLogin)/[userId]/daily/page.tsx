@@ -2,9 +2,11 @@
 import { DefaultError, HydrationBoundary, InfiniteData, QueryClient, dehydrate } from "@tanstack/react-query";
 
 import { getDailyRecords } from "./_lib/getDailyRecords";
+import { IDailyInput } from "@/interfaces/IDaily";
+
 import DataZone from "./_component/DataZone";
 import FormZone from "./_component/FormZone";
-import { IDailyInput } from "@/interfaces/IDaily";
+import BodyStopper from "@/app/(afterLogin)/[userId]/_component/BodyStopper";
 
 type Props = { params: { userId: string } };
 
@@ -20,8 +22,10 @@ export default async function Page({ params }: Props) {
 
 	return (
 		<HydrationBoundary state={dehydratedState}>
-			<FormZone userId={userId} />
-			<DataZone userId={userId} />
+			<BodyStopper>
+				<FormZone userId={userId} />
+				<DataZone userId={userId} />
+			</BodyStopper>
 		</HydrationBoundary>
 	);
 }

@@ -36,3 +36,6 @@ export const listItem = style({
 export const todo = style({
 	color: global.font.color.red,
 });
+export const done = style({
+	textDecoration: "line-through",
+});

@@ -1,9 +1,8 @@
 "use client";
 
-import { ReactNode } from "react";
 import { useThemeStore } from "@/store/theme";
 
-type Props = { children: ReactNode };
+type Props = { children: React.ReactNode };
 
 export default function ThemeProvider({ children }: Props) {
 	const themeStore = useThemeStore();

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { useModalStore } from "@/store/modal";
-import * as styles from "./modal.css";
+import * as styles from "./transferModal.css";
 
 type Props = { assetTypeId: string; assetName: string; userId: string };
 
