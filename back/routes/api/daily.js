@@ -18,16 +18,41 @@ const findUser = async (email) => {
 };
 
 /** [S] APIs */
+router.get("/filter/:userId", async (req, res) => {
+	console.log("hello, fitlered", req.query);
+	const { from, to, assetTypeId, memo, transactionType } = req.query;
+	try {
+		const userId = req.params.userId;
+		const user_Id = await findUser(userId);
+		const queries = [];
+		if (!!transactionType) queries.push({ transactionType: { $eq: transactionType } });
+		if (!!assetTypeId) queries.push({ assetTypeId: { $eq: assetTypeId } });
+		if (!!from) queries.push({ registeredDate: { $gte: from } });
+		if (!!to) queries.push({ registeredDate: { $lte: to } });
+		if (!!memo) queries.push({ memo: { $regex: memo } });
+
+		const conditions = queries.length === 0 ? { ownerId: user_Id } : { ownerId: user_Id, $and: queries };
+		const records = await Daily.find(conditions).sort({ registeredDate: -1 });
+		const formattedRecords = records.map((record) => ({ ...record.toObject(), registeredDate: moment(record.registeredDate).format("YYYY-MM-DD HH:mm") }));
+		// console.log("here are filtered records!", records);
+		return res.status(200).json(formattedRecords);
+	} catch (error) {
+		console.log("there's an error!!!", error);
+		return res.status(500).json({ message: `failed to get filtered daily records! ${error}` });
+	}
+});
+
 // get single record
 router.get("/:userId/:recordId", async (req, res) => {
 	try {
-		console.log(`params!!!`, req.params);
+		console.log("are you responsing?");
+		// console.log(`params!!!`, req.params);
 		const { userId, recordId } = req.params;
-		console.log("requsetparams!!!!!", userId, recordId);
+		// console.log("requsetparams!!!!!", userId, recordId);
 		const record = await Daily.findOne({ id: recordId });
 
 		const formattedRecord = { ...record.toObject(), registeredDate: moment(record.registeredDate).format("YYYY-MM-DD HH:mm") };
-		console.log("here is the record!", record);
+		// console.log("here is the record!", record);
 		return res.status(200).json(formattedRecord);
 	} catch (error) {
 		console.log("there's an error!!!", error);
@@ -35,51 +60,28 @@ router.get("/:userId/:recordId", async (req, res) => {
 	}
 });
 
-// get all daily records
+// getDailyRecords
 router.get("/:userId", async (req, res) => {
 	try {
 		const userId = req.params.userId;
 		const cursor = req.query.cursor ?? +req.query.cursor;
 		const recordsPerPage = 10;
 		const skipped = cursor * recordsPerPage;
-		console.log("requsetparams!!!!!", userId);
-		console.log("requsetquerystring!!!!!", cursor);
-		console.log(`${skipped} records were sent already.`);
+		// console.log("requsetparams!!!!!", userId);
+		// console.log("requsetquerystring!!!!!", cursor);
+		// console.log(`${skipped} records were sent already.`);
 		// (커서+1) x 2개만큼 반환하기! (현재 페이지와 같이)
 		const user_Id = await findUser(userId);
 		const records = Number.isNaN(cursor) ? await Daily.find({ ownerId: user_Id }).sort({ registeredDate: -1 }) : await Daily.find({ ownerId: user_Id }).sort({ registeredDate: -1 }).skip(skipped).limit(recordsPerPage);
 		// const records = await Daily.find({ ownerId: user_Id }).skip(skipped).limit(recordsPerPage);
 		// 몽구스 내부에서 쓰기 위해 find의 결과 값은 좀 다르게 생겼다. 따라서 toObject()를 통해 모델과 같은 모양의 객체를 가져와야 함
 		const formattedRecords = records.map((record) => ({ ...record.toObject(), registeredDate: moment(record.registeredDate).format("YYYY-MM-DD HH:mm") }));
-		console.log("how many records do you have?", records.length);
+		// console.log("how many records do you have?", records.length);
 		// console.log("here are records!", records);
 		return res.status(200).json(formattedRecords);
 	} catch (error) {
 		console.log("there's an error!!!", error);
 		return res.status(500).json({ message: `failed to get all daily records! ${error}` });
-	}
-});
-// TODO: get filtered daily records
-router.get("/filter/:userId", async (req, res) => {
-	try {
-		const userId = req.params.userId;
-		const user_Id = await findUser(userId);
-		const { filteredTransactionType, filteredAssetTypeId, from, to, keyword } = req.body;
-		const queries = [];
-		if (!!filteredTransactionType) queries.push({ transactionType: { $eq: filteredTransactionType } });
-		if (!!filteredAssetTypeId) queries.push({ assetTypeId: { $eq: filteredAssetTypeId } });
-		if (!!from) queries.push({ registeredDate: { $gte: from } });
-		if (!!to) queries.push({ registeredDate: { $lte: to } });
-		if (!!keyword) queries.push({ memo: { $regex: keyword } });
-
-		const conditions = queries.length === 0 ? { ownerId: user_Id } : { ownerId: user_Id, $and: queries };
-		const records = await Daily.find(conditions).sort({ registeredDate: -1 });
-		const formattedRecords = records.map((record) => ({ ...record.toObject(), registeredDate: moment(record.registeredDate).format("YYYY-MM-DD HH:mm") }));
-		console.log("here are filtered records!", records);
-		return res.status(200).json({ records: formattedRecords, message: "here are all records!" });
-	} catch (error) {
-		console.log("there's an error!!!", error);
-		return res.status(500).json({ message: `failed to get filtered daily records! ${error}` });
 	}
 });
 

@@ -9,8 +9,8 @@ const darkItemBaseColor = "#5a7086";
 
 const lightFontBaseColor = darkBaseColor;
 const darkFontBaseColor = "#fff9e0";
-const fontBlueColor = "#9191ff";
-const fontRedColor = "#ff7f7f";
+export const fontBlueColor = "#9191ff";
+export const fontRedColor = "#ff7f7f";
 
 const lightFontGrayColor = "#7f7f7f";
 const darkFontGrayColor = darkBaseColor;
@@ -119,17 +119,18 @@ globalStyle("input", { ...inputStyle });
 globalStyle("textarea", { ...inputStyle });
 globalStyle("select", { ...inputStyle });
 globalStyle("label", {
-	width: 120,
+	// width: 120,
+	width: 160,
 	display: "inline-block",
 });
 globalStyle("button", {
 	width: "100%",
-	marginBottom: 4,
+	marginBottom: 8,
 	padding: "8px",
 	fontWeight: "bold",
 	cursor: "pointer",
 	backgroundColor: global.background.color,
-	transitionDuration: "background-color 0.2s",
+	transition: "background-color 0.2s",
 	border: "none",
 	borderRadius: 4,
 });
@@ -138,4 +139,15 @@ globalStyle("button:active", {
 });
 globalStyle("li", {
 	listStyle: "none",
+});
+globalStyle("::-webkit-scrollbar", {
+	width: 8,
+});
+globalStyle("::-webkit-scrollbar-thumb", {
+	backgroundColor: global.foreground.color,
+	borderRadius: 8,
+});
+globalStyle("::-webkit-scrollbar-track", {
+	backgroundColor: global.itemBackground.color,
+	borderRadius: 8,
 });

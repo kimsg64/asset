@@ -1,4 +1,4 @@
-export type TransactionType = "spending" | "income" | "transfer";
+export type TransactionType = "spending" | "income" | "all";
 
 export type SearchConditions = {
 	transactionType?: TransactionType;

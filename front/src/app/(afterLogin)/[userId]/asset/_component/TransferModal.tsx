@@ -9,7 +9,7 @@ import TextareaAutosize from "react-textarea-autosize";
 import { useModalStore } from "@/store/modal";
 import { getAssets } from "@/app/(afterLogin)/[userId]/_lib/getAssets";
 import { IAsset } from "@/interfaces/IAsset";
-import * as styles from "./transferModal.css";
+import * as styles from "./assetModal.css";
 import Backdrop from "@/app/(afterLogin)/[userId]/_component/Backdrop";
 
 type Props = { assetTypeId: string; userId: string };
@@ -46,7 +46,7 @@ export default function TransferModal({ assetTypeId, userId }: Props) {
 					recipientAmount: recipient?.amount,
 					amount,
 					memo,
-					ownerId: userId,
+					userId,
 				}),
 			});
 		},
@@ -70,7 +70,7 @@ export default function TransferModal({ assetTypeId, userId }: Props) {
 	// [S] event handling
 	const onChangeAmount: ChangeEventHandler<HTMLInputElement> = (event) => {
 		if (!sender) return;
-		const amount = +event.target.value.split(",").join("");
+		const amount = Math.abs(+event.target.value.split(",").join(""));
 		setAmount(Number.isNaN(amount) ? 0 : amount > sender.amount ? sender.amount : amount);
 	};
 	const onChangeRecipient: FormEventHandler<HTMLSelectElement> = (event) => {
@@ -103,8 +103,8 @@ export default function TransferModal({ assetTypeId, userId }: Props) {
 					<TextareaAutosize className={styles.textarea} id="memo" placeholder="메모" value={memo} onChange={onChangeMemo} />
 				</div>
 				<div className={styles.buttonsZone}>
-					<button>이체</button>
-					<button type="button" onClick={destroyModal}>
+					<button className={styles.button}>이체</button>
+					<button className={styles.button} type="button" onClick={destroyModal}>
 						취소
 					</button>
 				</div>

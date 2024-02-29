@@ -28,6 +28,9 @@ export const username = style({
 	fontSize: "1.2rem",
 	fontWeight: "bold",
 });
+export const logoutButton = style({
+	width: "unset",
+});
 export const navContainer = style({
 	display: "flex",
 	alignItems: "center",
@@ -35,6 +38,8 @@ export const navContainer = style({
 });
 export const navItem = style({
 	height: "100%",
+	fontWeight: "bold",
+	":hover": { cursor: "pointer" },
 });
 export const icon = style({
 	width: 48,

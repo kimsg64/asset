@@ -23,6 +23,7 @@ export default function ItemBoxesZone({ userId }: Props) {
 		staleTime: 60 * 1000,
 		gcTime: 300 * 1000,
 	});
+	// console.log("assets!", assets);
 	const colors = useRandomColors(assets?.length as number);
 
 	const moreThanTwo = !!assets && assets.length > 1;

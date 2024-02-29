@@ -20,6 +20,7 @@ export const calendar = style({
 export const formButton = style({
 	maxWidth: 120,
 	margin: 0,
+	backgroundColor: global.foreground.color,
 });
 export const coloredInput = style({
 	"::placeholder": {

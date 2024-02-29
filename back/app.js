@@ -12,7 +12,6 @@ const mongoose = require("mongoose"); // DB
 const config = require("./configs/index"); // DB config
 
 const http = require("http"); // http core module
-
 /** [E] import modules */
 
 /** [S] use middlewares */
@@ -36,17 +35,17 @@ const { MONGO_URI, PORT } = config;
 let mongoUri = MONGO_URI;
 let port = PORT || 8080;
 mongoose
-    .set("strictQuery", true)
-    .connect(mongoUri, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    })
-    .then(() => {
-        console.log("mongodb connected!!!");
-    })
-    .catch((error) => {
-        console.log("failed!!!", error);
-    });
+	.set("strictQuery", true)
+	.connect(mongoUri, {
+		useNewUrlParser: true,
+		useUnifiedTopology: true,
+	})
+	.then(() => {
+		console.log("mongodb connected!!!");
+	})
+	.catch((error) => {
+		console.log("failed!!!", error);
+	});
 // [E] set DB port, uri
 
 // [S] REST API

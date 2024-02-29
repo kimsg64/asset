@@ -4,6 +4,7 @@ import { useState, ChangeEventHandler, FormEvent } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import * as styles from "./formZone.css";
+import Link from "next/link";
 
 type Props = { userId: string };
 
@@ -70,10 +71,14 @@ export default function FormZone({ userId }: Props) {
 				</label>
 				<input id="memo" className={styles.grownFormInput} type="text" placeholder="메모" value={memo} onChange={onChangeMemo} />
 			</div>
-
-			<button className={styles.formButton} type="submit">
-				CREATE!!!
-			</button>
+			<div className={styles.formInputWrapper}>
+				<button className={styles.formButton} type="submit">
+					CREATE!!!
+				</button>
+				<Link className={styles.navigateButton} href={`/${userId}/stock`}>
+					ADD STOCK
+				</Link>
+			</div>
 		</form>
 	);
 }

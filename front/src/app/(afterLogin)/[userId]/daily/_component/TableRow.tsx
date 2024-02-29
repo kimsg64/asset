@@ -13,9 +13,9 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 dayjs.extend(customParseFormat);
 
-type Props = { userId: string; record: IDailyInput };
+type Props = { userId: string; record: IDailyInput; readonly?: boolean };
 
-export default function TableRow({ userId, record }: Props) {
+export default function TableRow({ userId, record, readonly }: Props) {
 	const { data: asset } = useQuery<IAsset, Object, IAsset, [_1: string, string, _3: string, string]>({
 		queryKey: ["users", userId, "assets", record.assetTypeId],
 		queryFn: getSingleAsset,
@@ -55,7 +55,7 @@ export default function TableRow({ userId, record }: Props) {
 	const onClickUpdate = () => {
 		if (record.isFirstInput) {
 			alert("히히수정못해!");
-			throw new Error("히히수정못해!");
+			return;
 		}
 
 		updateModalStore.setRec(record);
@@ -65,20 +65,22 @@ export default function TableRow({ userId, record }: Props) {
 
 	return (
 		<>
-			<ul className={styles.row}>
+			<ul className={readonly ? styles.smallRow : styles.row}>
 				<li>{record.transactionType === "income" ? <span className={styles.surplus}>수입</span> : record.transactionType === "spending" ? <span className={styles.deficit}>지출</span> : <span>이체</span>}</li>
 				<li>{asset?.name}</li>
 				<li>{dayjs(record.registeredDate).format("YYYY-MM-DD HH:mm")}</li>
 				<li>{record.amount.toLocaleString()}</li>
 				<li>{record.memo}</li>
-				<li className={styles.flexCell}>
-					<button type="button" className={styles.buttonInCell} onClick={onClickUpdate}>
-						수정
-					</button>
-					<button type="button" className={styles.buttonInCell} onClick={deleteRow.mutate}>
-						삭제
-					</button>
-				</li>
+				{readonly ? null : (
+					<li className={styles.flexCell}>
+						<button type="button" className={styles.buttonInCell} onClick={onClickUpdate}>
+							수정
+						</button>
+						<button type="button" className={styles.buttonInCell} onClick={deleteRow.mutate}>
+							삭제
+						</button>
+					</li>
+				)}
 			</ul>
 		</>
 	);

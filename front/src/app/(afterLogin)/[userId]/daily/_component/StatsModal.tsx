@@ -1,7 +1,7 @@
 "use client";
 
 import { ChangeEventHandler, useEffect, useState } from "react";
-import { DefaultError, InfiniteData, useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query";
+import { DefaultError, useQuery, useQueryClient } from "@tanstack/react-query";
 import { IDailyInput } from "@/interfaces/IDaily";
 import { IAsset } from "@/interfaces/IAsset";
 import { getFilteredRecords } from "@/app/(afterLogin)/[userId]/daily/_lib/getFilteredRecords";
@@ -10,29 +10,28 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 dayjs.extend(customParseFormat);
 
-import { ArcElement, Chart, ChartOptions, ChartData, Legend, Tooltip } from "chart.js";
-import { Pie } from "react-chartjs-2";
-Chart.register(ArcElement, Legend, Tooltip);
-import { faker } from "@faker-js/faker";
-
 import * as styles from "./statsModal.css";
 import Backdrop from "@/app/(afterLogin)/[userId]/_component/Backdrop";
+import StatsModalDataSection from "./StatsModalDataSection";
 
 type Props = { userId: string };
 type PeriodTypes = "day" | "week" | "month" | "year";
+type ChartDataSet = { totalIncomeAmount: number; totalSpendingAmount: number; hasData: boolean };
+
 export default function StatsModal({ userId }: Props) {
-	const [periodUnit, setPeriodUnit] = useState<PeriodTypes>("day");
+	const [periodUnit, setPeriodUnit] = useState<PeriodTypes>("month");
+	const [isPrev, setIsPrev] = useState(false);
 	const [from, setFrom] = useState(dayjs().startOf("month").format("YYYY-MM-DD"));
 	const [to, setTo] = useState(dayjs().format("YYYY-MM-DD"));
 	const [assets, setAssets] = useState<IAsset[]>([]);
-	// const [dailyInputs, setDailyInputs] = useState<IDailyInput[]>([]);
 	const [selectedAsset, setSelectedAsset] = useState("");
-	const [chartDataset, setChartDataset] = useState<number[]>([]);
+	const [chartDataset, setChartDataset] = useState<ChartDataSet>({ totalIncomeAmount: 0, totalSpendingAmount: 0, hasData: false });
 
-	// TODO: 백엔드로 새로 요청을 보내야 함! (getFilteredRecords 생성) to /filter/:userId
-	const { data: dailyRecords } = useQuery<IDailyInput[], DefaultError, IDailyInput[], [_1: string, string, _3: string, { from: string; to: string; assetTypeId: string }]>({
-		queryKey: ["users", userId, "daily", { from, to, assetTypeId: selectedAsset }],
+	const { data: dailyRecords, isFetching } = useQuery<IDailyInput[], DefaultError, IDailyInput[], [_1: string, string, _3: string, { from: string; to: string; assetTypeId?: string; transactionType?: string; memo?: string }]>({
+		queryKey: ["users", userId, "daily", { from: dayjs(from).startOf("day").format("YYYY-MM-DD HH:mm"), to: dayjs(to).endOf("day").format("YYYY-MM-DD HH:mm"), assetTypeId: selectedAsset }],
 		queryFn: getFilteredRecords,
+		staleTime: 60 * 1000,
+		gcTime: 300 * 1000,
 	});
 	const queryClient = useQueryClient();
 	const queryKeys = queryClient
@@ -50,21 +49,28 @@ export default function StatsModal({ userId }: Props) {
 
 	console.log("dailyRecords", dailyRecords);
 
-	// const totalAmount = dailyInputs?.reduce((accumulator, currentRec) => accumulator + currentRec.amount, 0);
-	// const dataset = new Array(assets?.length).map((part, idx) => {
-	// 	return dailyInputs.filter((rec) => rec.assetTypeId === assets[idx]._id).reduce((accumulator, currentRec) => accumulator + currentRec.amount, 0) / totalAmount;
-	// });
-	// const chartData: ChartData<"pie"> = {
-	// 	labels: assets?.map((asset) => `${asset.name}(${Math.round((asset.amount / totalAmount) * 100)}%)`),
-	// 	datasets: [
-	// 		{
-	// 			data: assets?.map((asset) => asset.amount)!,
-	// 			backgroundColor: assets?.map((asset, idx) => faker.color.rgb({ casing: "upper" })),
-	// 		},
-	// 	],
-	// };
+	useEffect(() => {
+		const incomes = dailyRecords?.filter((rec) => rec.transactionType === "income");
+		const totalIncomeAmount = !!incomes && incomes.length > 0 ? incomes.reduce((accumulator, currentRec) => accumulator + currentRec.amount, 0) : 0;
+		const spendings = dailyRecords?.filter((rec) => rec.transactionType === "spending");
+		const totalSpendingAmount = !!spendings && spendings.length > 0 ? spendings.reduce((accumulator, currentRec) => accumulator + currentRec.amount, 0) : 0;
+		setChartDataset({ totalIncomeAmount, totalSpendingAmount, hasData: totalIncomeAmount !== 0 || totalSpendingAmount !== 0 });
+	}, [dailyRecords]);
 
-	const onChangePeriodUnit: ChangeEventHandler<HTMLSelectElement> = (event) => setPeriodUnit(event.target.value as PeriodTypes);
+	const setDefaultPeriod = (passedPeriod = periodUnit) => {
+		if (passedPeriod === "day") {
+			setFrom(dayjs().format("YYYY-MM-DD"));
+		} else {
+			setFrom(dayjs().startOf(passedPeriod).format("YYYY-MM-DD"));
+		}
+		setTo(dayjs().format("YYYY-MM-DD"));
+		setIsPrev(false);
+	};
+	const onChangePeriodUnit: ChangeEventHandler<HTMLSelectElement> = (event) => {
+		const periodUnit = event.target.value as PeriodTypes;
+		setPeriodUnit(periodUnit);
+		setDefaultPeriod(periodUnit);
+	};
 	const onClickPrev = () => {
 		if (periodUnit === "day") {
 			setFrom(dayjs().subtract(1, periodUnit).format("YYYY-MM-DD"));
@@ -73,22 +79,14 @@ export default function StatsModal({ userId }: Props) {
 			setFrom(dayjs().subtract(1, periodUnit).startOf(periodUnit).format("YYYY-MM-DD"));
 			setTo(dayjs().subtract(1, periodUnit).endOf(periodUnit).format("YYYY-MM-DD"));
 		}
+		setIsPrev(true);
 	};
-	const onClickThis = () => {
-		if (periodUnit === "day") {
-			setFrom(dayjs().format("YYYY-MM-DD"));
-		} else {
-			setFrom(dayjs().startOf(periodUnit).format("YYYY-MM-DD"));
-		}
-		setTo(dayjs().format("YYYY-MM-DD"));
-	};
-
+	const onClickThis = () => setDefaultPeriod();
 	const onChangeFrom: ChangeEventHandler<HTMLInputElement> = (event) => setFrom(event.target.value);
 	const onChangeTo: ChangeEventHandler<HTMLInputElement> = (event) => setTo(event.target.value);
 
-	const onClickAsset = () => {
-		setSelectedAsset("");
-	};
+	const onChangeAsset: ChangeEventHandler<HTMLInputElement> = (event) => setSelectedAsset(event.target.value);
+	const onSubmitSelectedAsset = () => queryClient.invalidateQueries({ queryKey: ["users", userId, "daily", { from, to, assetTypeId: selectedAsset }] });
 
 	return (
 		<Backdrop>
@@ -100,15 +98,17 @@ export default function StatsModal({ userId }: Props) {
 							<select onChange={onChangePeriodUnit}>
 								<option value="day">일간</option>
 								<option value="week">주간</option>
-								<option value="month">월간</option>
+								<option value="month" selected>
+									월간
+								</option>
 								<option value="year">연간</option>
 							</select>
 
-							<button className={styles.periodButton} onClick={onClickPrev}>
-								PREV {periodUnit}
+							<button className={isPrev ? [styles.periodButton, styles.checked].join(" ") : styles.periodButton} onClick={onClickPrev}>
+								PREV {periodUnit.toUpperCase()}
 							</button>
-							<button className={styles.periodButton} onClick={onClickThis}>
-								THIS {periodUnit}
+							<button className={isPrev ? styles.periodButton : [styles.periodButton, styles.checked].join(" ")} onClick={onClickThis}>
+								THIS {periodUnit.toUpperCase()}
 							</button>
 
 							<span className={styles.rightSection}>기간 선택</span>
@@ -118,22 +118,21 @@ export default function StatsModal({ userId }: Props) {
 					</div>
 					<div className={styles.filterContainer}>
 						<div className={styles.filterName}>자산</div>
-						<div className={styles.assetsContainer}>
-							<button className={styles.assetButton} onClick={onClickAsset}>
-								전체
-							</button>
+						<form className={styles.assetsContainer} onSubmit={onSubmitSelectedAsset}>
+							<label htmlFor="all" className={selectedAsset === "" ? [styles.assetLabel, styles.checked].join(" ") : styles.assetLabel}>
+								<span>전체</span>
+								<input type="radio" id="all" className={styles.assetRadio} name="asset" value="" onChange={onChangeAsset} checked={selectedAsset === ""} />
+							</label>
 							{assets?.map((asset) => (
-								<button className={styles.assetButton} key={asset._id} onClick={onClickAsset}>
-									{asset.name}
-								</button>
+								<label htmlFor={asset._id} key={asset._id} className={selectedAsset === asset._id ? [styles.assetLabel, styles.checked].join(" ") : styles.assetLabel}>
+									<span>{asset.name}</span>
+									<input type="radio" id={asset._id} className={styles.assetRadio} name="asset" value={asset._id} onChange={onChangeAsset} checked={selectedAsset === asset._id} />
+								</label>
 							))}
-						</div>
+						</form>
 					</div>
 				</section>
-				<section>
-					1. 선택된 기간에 따른 수입/지출 내역 2. 선택된 기간에 따른 특정 자산의 수입/지출 내역
-					{/* <Pie data={chartData} /> */}
-				</section>
+				{!isFetching && dailyRecords && <StatsModalDataSection chartDataset={chartDataset} dailyRecords={dailyRecords} userId={userId} />}
 			</div>
 		</Backdrop>
 	);

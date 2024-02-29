@@ -12,18 +12,26 @@ export const row = style({
 	...commonRow,
 	textAlign: "center",
 });
-export const formRow = style({
-	padding: 8,
-	backgroundColor: global.itemBackground.color,
-	borderBottom: `1px solid #ffffff`,
+export const smallRow = style({
+	...commonRow,
+	gridTemplateColumns: "1fr 2fr 2fr 1fr 4fr",
+	textAlign: "center",
 });
-export const header = style({
+const commonHeader = {
 	...commonRow,
 	fontWeight: "bold",
-	textAlign: "center",
 	backgroundColor: global.foreground.color,
 	borderTopLeftRadius: 4,
 	borderTopRightRadius: 4,
+};
+export const header = style({
+	...commonHeader,
+	textAlign: "center",
+});
+export const smallHeader = style({
+	...commonHeader,
+	gridTemplateColumns: "1fr 2fr 2fr 1fr 4fr",
+	textAlign: "center",
 });
 export const deficit = style({
 	color: global.font.color.red,
@@ -38,12 +46,6 @@ export const flexCell = style({
 export const buttonInCell = style({
 	flexGrow: 1,
 	margin: 0,
-});
-export const noData = style({
-	textAlign: "center",
-	padding: "12rem",
-	fontSize: "4rem",
-	backgroundColor: global.itemBackground.color,
 });
 export const reverseButton = style({
 	backgroundColor: global.itemBackground.color,

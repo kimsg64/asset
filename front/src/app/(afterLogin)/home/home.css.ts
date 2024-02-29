@@ -33,6 +33,10 @@ export const listItem = style({
 	},
 	marginBottom: 2,
 });
+export const description = style({
+	fontSize: "0.8rem",
+	marginLeft: 40,
+});
 export const todo = style({
 	color: global.font.color.red,
 });

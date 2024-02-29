@@ -18,7 +18,7 @@ import { useSearchParams } from "next/navigation";
 type Props = { userId: string };
 
 export default function DataZone({ userId }: Props) {
-	const [transactionType, setTransactionType] = useState<TransactionType>("spending");
+	const [transactionType, setTransactionType] = useState<TransactionType>("all");
 	const [assetTypeId, setAssetTypeId] = useState("");
 	const [from, setFrom] = useState(dayjs().startOf("month").format("YYYY-MM-DD"));
 	const [to, setTo] = useState(dayjs().format("YYYY-MM-DD"));
@@ -65,6 +65,7 @@ export default function DataZone({ userId }: Props) {
 			<form className={styles.form} onSubmit={onSubmitFilterConditions}>
 				<h3>검색</h3>
 				<select id="transactionType" className={styles.selectBox} value={transactionType} onChange={onChangeTransactionType}>
+					<option value="all">전체</option>
 					<option value="spending">지출</option>
 					<option value="income">수입</option>
 				</select>

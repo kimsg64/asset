@@ -2,8 +2,8 @@ import { global } from "@/app/globalTheme.css";
 import { style } from "@vanilla-extract/css";
 
 export const modalBody = style({
-	width: 600,
-	padding: 32,
+	width: "36rem",
+	// padding: 32,
 });
 
 export const alert = style({
@@ -18,6 +18,7 @@ export const selectBox = style({
 export const textarea = style({
 	fontFamily: "Malgun Gothic",
 	width: "100%",
+	resize: "none",
 	minHeight: 100,
 	marginTop: 24,
 	marginBottom: 12,
@@ -28,4 +29,7 @@ export const textarea = style({
 export const buttonsZone = style({
 	display: "flex",
 	gap: 12,
+});
+export const button = style({
+	backgroundColor: global.foreground.color,
 });

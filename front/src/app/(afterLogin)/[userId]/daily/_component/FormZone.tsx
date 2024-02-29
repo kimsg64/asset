@@ -140,7 +140,7 @@ export default function FormZone({ userId, rec }: Props) {
 	const onChangeRegisteredMinute: ChangeEventHandler<HTMLSelectElement> = (event) => setRegisteredMinute(event.target.value);
 	const onChangeAmount: ChangeEventHandler<HTMLInputElement> = (event) => {
 		const amount = +event.target.value.split(",").join("");
-		setAmount(Number.isNaN(amount) ? 0 : amount);
+		setAmount(Number.isNaN(amount) ? 0 : Math.abs(amount));
 	};
 	const onChangeMemo: ChangeEventHandler<HTMLInputElement> = (event) => setMemo(event.target.value);
 

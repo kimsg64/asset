@@ -25,6 +25,7 @@ export const grownFormInput = style({
 export const formButton = style({
 	maxWidth: 120,
 	margin: 0,
+	backgroundColor: global.foreground.color,
 });
 export const error = style({
 	position: "absolute",

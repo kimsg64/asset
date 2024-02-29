@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { useModalStore } from "@/store/modal";
-import * as styles from "./transferModal.css";
+import * as styles from "./assetModal.css";
+import Backdrop from "../../_component/Backdrop";
 
 type Props = { assetTypeId: string; assetName: string; userId: string };
 
@@ -36,14 +37,20 @@ export default function DeleteModal({ assetTypeId, assetName, userId }: Props) {
 	};
 
 	return (
-		<div className={styles.modalBackdrop}>
+		// <div className={styles.modalBackdrop}>
+		<Backdrop>
 			<div className={styles.modalBody}>
 				<div className={styles.alert}>&apos;{assetName}&apos;을 삭제하시겠습니까?</div>
 				<div className={styles.buttonsZone}>
-					<button onClick={deleteAsset.mutate}>확인</button>
-					<button onClick={destroyModal}>취소</button>
+					<button className={styles.button} onClick={deleteAsset.mutate}>
+						확인
+					</button>
+					<button className={styles.button} onClick={destroyModal}>
+						취소
+					</button>
 				</div>
 			</div>
-		</div>
+		</Backdrop>
+		// </div>
 	);
 }

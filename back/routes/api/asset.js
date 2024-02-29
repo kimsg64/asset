@@ -23,7 +23,7 @@ const findUser = async (email) => {
 router.get("/:userId/asset/:id", async (req, res) => {
 	try {
 		const asset = await Asset.findById(req.params.id);
-		console.log("here is the asset!", asset);
+		// console.log("here is the asset!", asset);
 		return res.status(200).json(asset);
 	} catch (error) {
 		console.log("there's an error!!!", error);
@@ -38,7 +38,7 @@ router.get("/:userId", async (req, res) => {
 		const userId = req.params.userId;
 		// 세션에서 사용자 식별 후 검색에 포함해야 하는데... 백엔드 로직을 잘 모르겠으므로 일단 email로 구분해서 보내기
 		const user_Id = await findUser(userId);
-		console.log("userId:::::", userId, user_Id);
+		// console.log("userId:::::", userId, user_Id);
 		const assets = await Asset.find({ ownerId: user_Id }).populate("inputs");
 
 		const formattedAssets = assets.map((asset) => {
@@ -48,7 +48,7 @@ router.get("/:userId", async (req, res) => {
 			return { ...asset.toObject(), inputDate: moment(asset.inputDate).format("YYYY-MM-DD"), amount };
 		});
 
-		console.log("here are formatted assets!", formattedAssets);
+		// console.log("here are formatted assets!", formattedAssets);
 		return res.status(200).json(formattedAssets);
 	} catch (error) {
 		console.log("there's an error!!!", error);
@@ -61,10 +61,11 @@ router.post("/create", async (req, res) => {
 	// console.log("posted!!!", req.body);
 	// console.log("this is new asset input!", newAsset);
 	const { name, amount, memo, userId } = req.body;
-	console.log("name:", name, "amount:", amount, "memo:", memo, "userId:", userId, "decoded:", decodeURIComponent(userId));
+	// console.log("name:", name, "amount:", amount, "memo:", memo, "userId:", userId, "decoded:", decodeURIComponent(userId));
 	const ownerId = await findUser(decodeURIComponent(userId));
 	try {
-		const newDaily = new Daily({ amount, transactionType: "income", memo: "자산입력", ownerId, isFirstInput: true });
+		const transactionType = amount >= 0 ? "income" : "spending";
+		const newDaily = new Daily({ amount: Math.abs(amount), transactionType, memo: "자산입력", ownerId, isFirstInput: true });
 		const newAsset = new Asset({ name, memo, ownerId, inputs: [newDaily._id] }); // new User object
 		await Promise.all([newDaily.save(), newAsset.save()]);
 		await newDaily.updateOne({ assetTypeId: newAsset._id });
@@ -104,8 +105,9 @@ router.post("/update/:id", async (req, res) => {
 // @transaction: update two assets and update two daily inputs
 router.post("/transfer", async (req, res) => {
 	try {
-		const { senderId, senderAmount, recipientId, recipientAmount, amount, memo, ownerId } = req.body;
+		const { senderId, senderAmount, recipientId, recipientAmount, amount, memo, userId } = req.body;
 		console.log("body", req.body);
+		const ownerId = await findUser(userId);
 
 		// ownerId const user_Id = await findUser(userId); 이슈!!!!!!!
 		// Asset에서 자산 이동
